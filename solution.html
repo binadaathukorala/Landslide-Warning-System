@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Smart Landslide Warning System | Saving Lives in Sri Lanka</title>
+<style>
+:root{--primary:#0f172a;--secondary:#1e293b;--accent:#0ea5e9;--accent-light:#38bdf8;--danger:#ef4444;--warning:#f59e0b;--success:#10b981;--light:#f8fafc;--text:#334155;--text-light:#64748b}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;background:var(--light);color:var(--text);overflow-x:hidden}
+h1,h2,h3,h4,h5,h6{font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;font-weight:700}
+::-webkit-scrollbar{width:10px}
+::-webkit-scrollbar-track{background:var(--primary)}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:5px}
+
+/* SVG Icons */
+.icon{display:inline-block;width:1em;height:1em;vertical-align:middle;fill:currentColor;flex-shrink:0}
+
+/* Navbar */
+.navbar{position:fixed;top:0;width:100%;z-index:1000;padding:1rem 5%;display:flex;justify-content:space-between;align-items:center;transition:all .4s ease;background:transparent}
+.navbar.scrolled{background:rgba(15,23,42,.95);backdrop-filter:blur(20px);padding:.8rem 5%;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.logo{display:flex;align-items:center;gap:12px;color:white;text-decoration:none;font-weight:700;font-size:1.3rem}
+.logo .icon{width:28px;height:28px;fill:var(--accent-light);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+.nav-links{display:flex;gap:2.5rem;list-style:none}
+.nav-links a{color:rgba(255,255,255,.9);text-decoration:none;font-weight:500;font-size:.95rem;position:relative;transition:color .3s}
+.nav-links a::after{content:'';position:absolute;bottom:-5px;left:0;width:0;height:2px;background:var(--accent-light);transition:width .3s ease}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-links a:hover{color:var(--accent-light)}
+.mobile-menu-btn{display:none;background:none;border:none;color:white;font-size:1.5rem;cursor:pointer}
+
+/* Hero */
+.hero{min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#1e3a5f 50%,#0ea5e9 100%);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;padding:120px 5% 80px}
+.hero-bg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}
+.rain{position:absolute;width:2px;height:20px;background:rgba(56,189,248,.3);animation:rainFall linear infinite}
+@keyframes rainFall{0%{transform:translateY(-100px);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(100vh);opacity:0}}
+.float{position:absolute;border-radius:50%;background:rgba(56,189,248,.1);animation:float 6s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-30px) rotate(180deg)}}
+.hero-content{position:relative;z-index:10;text-align:center;max-width:900px}
+.hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);padding:8px 20px;border-radius:50px;color:var(--accent-light);font-size:.9rem;font-weight:500;margin-bottom:2rem;animation:fadeInDown 1s ease}
+@keyframes fadeInDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.hero-badge .icon{width:16px;height:16px;animation:spin 3s linear infinite}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.hero h1{font-size:clamp(2.5rem,5vw,4.5rem);font-weight:800;color:white;line-height:1.1;margin-bottom:1.5rem;text-shadow:0 4px 30px rgba(0,0,0,.3);animation:fadeInUp 1s ease .2s both}
+.hero h1 span{background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+.hero-subtitle{font-size:1.25rem;color:rgba(255,255,255,.8);margin-bottom:2.5rem;line-height:1.7;max-width:700px;margin-left:auto;margin-right:auto;animation:fadeInUp 1s ease .4s both}
+.hero-stats{display:flex;justify-content:center;gap:3rem;margin-bottom:3rem;flex-wrap:wrap;animation:fadeInUp 1s ease .6s both}
+.stat-item{text-align:center;color:white}
+.stat-number{font-size:2.5rem;font-weight:800;color:var(--accent-light);display:block}
+.stat-label{font-size:.9rem;opacity:.8;margin-top:5px}
+.hero-buttons{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;animation:fadeInUp 1s ease .8s both}
+.btn{padding:14px 32px;border-radius:50px;font-weight:600;font-size:1rem;cursor:pointer;transition:all .3s ease;text-decoration:none;display:inline-flex;align-items:center;gap:10px;border:none}
+.btn-primary{background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);color:white;box-shadow:0 10px 30px rgba(14,165,233,.4)}
+.btn-primary:hover{transform:translateY(-3px);box-shadow:0 15px 40px rgba(14,165,233,.5)}
+.btn-outline{background:transparent;color:white;border:2px solid rgba(255,255,255,.3)}
+.btn-outline:hover{background:rgba(255,255,255,.1);border-color:white;transform:translateY(-3px)}
+.scroll-indicator{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);color:rgba(255,255,255,.6);animation:bounce 2s infinite;cursor:pointer}
+@keyframes bounce{0%,20%,50%,80%,100%{transform:translateX(-50%) translateY(0)}40%{transform:translateX(-50%) translateY(-15px)}60%{transform:translateX(-50%) translateY(-8px)}}
+
+/* Sections */
+section{padding:100px 5%;position:relative}
+.section-header{text-align:center;margin-bottom:4rem;max-width:800px;margin-left:auto;margin-right:auto}
+.section-tag{display:inline-block;padding:6px 18px;background:rgba(14,165,233,.1);color:var(--accent);border-radius:50px;font-size:.85rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:1rem}
+.section-title{font-size:clamp(2rem,4vw,3rem);font-weight:700;color:var(--primary);margin-bottom:1rem;line-height:1.2}
+.section-desc{font-size:1.1rem;color:var(--text-light);line-height:1.7}
+
+/* Problem */
+.problem-section{background:white}
+.problem-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;max-width:1200px;margin:0 auto}
+.problem-card{background:linear-gradient(135deg,#ef4444 0%,#f97316 100%);padding:2rem;border-radius:20px;color:white;position:relative;overflow:hidden;box-shadow:0 20px 60px rgba(239,68,68,.3)}
+.problem-card::before{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:100%;background:rgba(255,255,255,.1);border-radius:50%}
+.problem-card h3{font-size:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:10px}
+.problem-card h3 .icon{width:24px;height:24px}
+.problem-card p{line-height:1.7;opacity:.95}
+.problem-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;margin-top:2rem}
+.problem-stat{background:rgba(255,255,255,.15);padding:1.5rem;border-radius:15px;text-align:center;backdrop-filter:blur(10px)}
+.problem-stat-number{font-size:2rem;font-weight:800;display:block}
+.problem-stat-label{font-size:.85rem;opacity:.9;margin-top:5px}
+.problem-content h3{font-size:1.8rem;color:var(--primary);margin-bottom:1.5rem}
+.problem-content p{color:var(--text);line-height:1.8;margin-bottom:1.5rem;font-size:1.05rem}
+.highlight-box{background:linear-gradient(135deg,rgba(14,165,233,.1) 0%,rgba(56,189,248,.05) 100%);border-left:4px solid var(--accent);padding:1.5rem;border-radius:0 15px 15px 0;margin:1.5rem 0}
+.highlight-box p{margin:0;font-style:italic;color:var(--primary)}
+
+/* Solution */
+.solution-section{background:var(--primary);color:white;position:relative;overflow:hidden}
+.solution-section::before{content:'';position:absolute;top:0;left:0;width:100%;height:100%;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");opacity:.5}
+.solution-section .section-title{color:white}
+.solution-section .section-desc{color:rgba(255,255,255,.7)}
+.solution-section .section-tag{background:rgba(255,255,255,.1);color:var(--accent-light)}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:2rem;max-width:1200px;margin:0 auto;position:relative;z-index:1}
+.feature-card{background:rgba(255,255,255,.05);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:2.5rem;transition:all .4s ease;position:relative;overflow:hidden}
+.feature-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);transform:scaleX(0);transform-origin:left;transition:transform .4s ease}
+.feature-card:hover::before{transform:scaleX(1)}
+.feature-card:hover{transform:translateY(-10px);background:rgba(255,255,255,.08);box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.feature-icon{width:60px;height:60px;background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);border-radius:15px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem;transition:transform .3s ease}
+.feature-icon .icon{width:28px;height:28px;fill:white}
+.feature-card:hover .feature-icon{transform:scale(1.1) rotate(5deg)}
+.feature-card h3{font-size:1.3rem;margin-bottom:1rem;color:white}
+.feature-card p{color:rgba(255,255,255,.7);line-height:1.7;font-size:.95rem}
+
+/* How It Works */
+.how-it-works{background:white}
+.steps-container{max-width:1000px;margin:0 auto;position:relative}
+.steps-line{position:absolute;left:50%;top:0;bottom:0;width:4px;background:linear-gradient(to bottom,var(--accent),var(--success));transform:translateX(-50%)}
+.step-item{display:flex;align-items:center;margin-bottom:4rem;position:relative}
+.step-item:nth-child(even){flex-direction:row-reverse}
+.step-content{flex:1;padding:0 3rem}
+.step-number{width:60px;height:60px;background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:800;color:white;position:relative;z-index:2;box-shadow:0 10px 30px rgba(14,165,233,.4);flex-shrink:0}
+.step-content h3{font-size:1.5rem;color:var(--primary);margin-bottom:.8rem}
+.step-content p{color:var(--text-light);line-height:1.7}
+.step-visual{flex:1;display:flex;justify-content:center;align-items:center}
+.step-card{background:var(--light);border-radius:20px;padding:2rem;width:100%;max-width:350px;box-shadow:0 10px 40px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.05)}
+.step-card .icon{width:48px;height:48px;fill:var(--accent);margin-bottom:1rem}
+.step-card h4{color:var(--primary);margin-bottom:.5rem}
+.step-card p{font-size:.9rem;color:var(--text-light)}
+
+/* Installation */
+.installation-section{background:linear-gradient(135deg,#f0f9ff 0%,#e0f2fe 100%)}
+.install-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:2rem;max-width:1200px;margin:0 auto}
+.install-card{background:white;border-radius:20px;padding:2rem;box-shadow:0 10px 40px rgba(0,0,0,.06);transition:all .4s ease;position:relative;overflow:hidden}
+.install-card:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,0,0,.1)}
+.install-step-num{position:absolute;top:-10px;right:20px;font-size:5rem;font-weight:900;color:rgba(14,165,233,.1);line-height:1}
+.install-card h3{color:var(--primary);margin-bottom:1rem;font-size:1.2rem;display:flex;align-items:center;gap:10px}
+.install-card h3 .icon{width:20px;height:20px;fill:var(--accent)}
+.install-card p{color:var(--text-light);line-height:1.7;font-size:.95rem}
+
+/* Technology */
+.tech-section{background:var(--primary);color:white}
+.tech-section .section-title{color:white}
+.tech-section .section-desc{color:rgba(255,255,255,.7)}
+.tech-section .section-tag{background:rgba(255,255,255,.1);color:var(--accent-light)}
+.tech-tabs{display:flex;justify-content:center;gap:1rem;margin-bottom:3rem;flex-wrap:wrap}
+.tech-tab{padding:12px 28px;background:rgba(255,255,255,.1);border:none;border-radius:50px;color:rgba(255,255,255,.8);font-weight:600;cursor:pointer;transition:all .3s ease}
+.tech-tab.active,.tech-tab:hover{background:var(--accent);color:white}
+.tech-content{max-width:1000px;margin:0 auto}
+.tech-panel{display:none}
+.tech-panel.active{display:block;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.component-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1.5rem}
+.component-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:15px;padding:1.5rem;transition:all .3s ease}
+.component-card:hover{background:rgba(255,255,255,.08);transform:translateY(-5px)}
+.component-card h4{color:var(--accent-light);margin-bottom:.5rem;font-size:1.1rem;display:flex;align-items:center;gap:8px}
+.component-card h4 .icon{width:18px;height:18px;fill:var(--accent-light)}
+.component-card p{color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6}
+.component-card .badge{display:inline-block;padding:4px 12px;background:rgba(16,185,129,.2);color:var(--success);border-radius:50px;font-size:.75rem;font-weight:600;margin-top:.8rem}
+.algo-box{background:rgba(0,0,0,.3);border-radius:15px;padding:2rem;font-family:'Courier New',monospace;color:#a5f3fc;line-height:2;border:1px solid rgba(56,189,248,.2);overflow-x:auto}
+.algo-box .comment{color:#64748b}
+.algo-box .keyword{color:#f472b6}
+.algo-box .function{color:#38bdf8}
+
+/* Warning Levels */
+.warning-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;max-width:900px;margin:0 auto}
+.warning-card{border-radius:20px;padding:2rem;text-align:center;transition:all .4s ease}
+.warning-card:hover{transform:translateY(-10px)}
+.warning-safe{background:linear-gradient(135deg,rgba(16,185,129,.15) 0%,rgba(16,185,129,.05) 100%);border:2px solid var(--success)}
+.warning-watch{background:linear-gradient(135deg,rgba(245,158,11,.15) 0%,rgba(245,158,11,.05) 100%);border:2px solid var(--warning)}
+.warning-danger{background:linear-gradient(135deg,rgba(239,68,68,.15) 0%,rgba(239,68,68,.05) 100%);border:2px solid var(--danger)}
+.warning-icon{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
+.warning-icon .icon{width:36px;height:36px;fill:white}
+.warning-safe .warning-icon{background:var(--success)}
+.warning-watch .warning-icon{background:var(--warning)}
+.warning-danger .warning-icon{background:var(--danger)}
+.warning-card h3{font-size:1.5rem;margin-bottom:.5rem}
+.warning-safe h3{color:var(--success)}
+.warning-watch h3{color:var(--warning)}
+.warning-danger h3{color:var(--danger)}
+.warning-card p{color:var(--text-light);font-size:.95rem;line-height:1.6}
+
+/* Team */
+.team-section{background:white}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2rem;max-width:1000px;margin:0 auto}
+.team-card{background:var(--light);border-radius:20px;padding:2.5rem 2rem;text-align:center;transition:all .4s ease;border:1px solid rgba(0,0,0,.05)}
+.team-card:hover{transform:translateY(-10px);box-shadow:0 20px 60px rgba(0,0,0,.1)}
+.team-avatar{width:100px;height:100px;background:linear-gradient(135deg,#0ea5e9 0%,#38bdf8 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:white;margin:0 auto 1.5rem;font-weight:700}
+.team-card h3{color:var(--primary);margin-bottom:.3rem}
+.team-role{color:var(--accent);font-weight:600;font-size:.9rem;margin-bottom:.5rem}
+.team-id{color:var(--text-light);font-size:.85rem;font-family:'Courier New',monospace}
+.institution-box{background:linear-gradient(135deg,rgba(14,165,233,.1) 0%,rgba(56,189,248,.05) 100%);border-radius:20px;padding:3rem;max-width:800px;margin:3rem auto 0;text-align:center;border:1px solid rgba(14,165,233,.2)}
+.institution-box h3{color:var(--primary);margin-bottom:1rem;font-size:1.5rem}
+.institution-box p{color:var(--text-light);line-height:1.8}
+.institution-box .logo-sliit{font-size:3rem;color:var(--accent);margin-bottom:1rem}
+.institution-box .logo-sliit .icon{width:48px;height:48px;fill:var(--accent)}
+
+/* Donation */
+.donation-section{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);position:relative;overflow:hidden}
+.donation-section::before{content:'';position:absolute;top:-50%;right:-20%;width:600px;height:600px;background:rgba(245,158,11,.1);border-radius:50%}
+.donation-container{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center;position:relative;z-index:1}
+.donation-content h2{font-size:2.5rem;color:var(--primary);margin-bottom:1rem}
+.donation-content p{color:var(--text);line-height:1.8;margin-bottom:2rem;font-size:1.05rem}
+.donation-stats{display:flex;gap:2rem;margin-bottom:2rem}
+.donation-stat{text-align:center}
+.donation-stat-number{font-size:2rem;font-weight:800;color:var(--warning)}
+.donation-stat-label{font-size:.85rem;color:var(--text-light)}
+.donation-form{background:white;border-radius:25px;padding:2.5rem;box-shadow:0 20px 60px rgba(0,0,0,.1)}
+.donation-form h3{text-align:center;margin-bottom:1.5rem;color:var(--primary);display:flex;align-items:center;justify-content:center;gap:10px}
+.donation-form h3 .icon{width:24px;height:24px;fill:var(--accent)}
+.amount-buttons{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.amount-btn{padding:1rem;border:2px solid #e2e8f0;background:white;border-radius:12px;cursor:pointer;font-weight:600;color:var(--primary);transition:all .3s ease}
+.amount-btn:hover,.amount-btn.active{border-color:var(--warning);background:rgba(245,158,11,.1);color:var(--warning)}
+.custom-amount{width:100%;padding:1rem;border:2px solid #e2e8f0;border-radius:12px;font-size:1rem;margin-bottom:1.5rem;transition:border-color .3s}
+.custom-amount:focus{outline:none;border-color:var(--warning)}
+.donate-btn{width:100%;padding:1rem;background:linear-gradient(135deg,#ef4444 0%,#f97316 100%);color:white;border:none;border-radius:12px;font-size:1.1rem;font-weight:700;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;gap:10px}
+.donate-btn:hover{transform:translateY(-3px);box-shadow:0 10px 30px rgba(239,68,68,.4)}
+.donate-btn .icon{width:20px;height:20px;fill:white;animation:heartbeat 1.5s infinite}
+@keyframes heartbeat{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.payment-methods{display:flex;justify-content:center;gap:1rem;margin-top:1.5rem;opacity:.6}
+.payment-methods .icon{width:28px;height:28px;fill:var(--text-light)}
+.impact-list{margin-top:1.5rem;list-style:none}
+.impact-list li{display:flex;align-items:center;gap:10px;margin-bottom:.8rem;color:var(--text)}
+.impact-list li .icon{width:18px;height:18px;fill:var(--success)}
+
+/* Footer */
+footer{background:var(--primary);color:white;padding:60px 5% 30px}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;max-width:1200px;margin:0 auto 3rem}
+.footer-brand p{color:rgba(255,255,255,.7);line-height:1.7;margin-top:1rem;font-size:.95rem}
+.footer-links h4{margin-bottom:1.5rem;color:var(--accent-light)}
+.footer-links ul{list-style:none}
+.footer-links li{margin-bottom:.8rem}
+.footer-links a{color:rgba(255,255,255,.7);text-decoration:none;transition:color .3s;font-size:.95rem;display:flex;align-items:center;gap:8px}
+.footer-links a:hover{color:var(--accent-light)}
+.footer-links a .icon{width:16px;height:16px;fill:currentColor}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.1);padding-top:2rem;text-align:center;color:rgba(255,255,255,.5);font-size:.9rem}
+.social-links{display:flex;gap:1rem;margin-top:1.5rem}
+.social-links a{width:40px;height:40px;background:rgba(255,255,255,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;text-decoration:none;transition:all .3s ease}
+.social-links a:hover{background:var(--accent);transform:translateY(-3px)}
+.social-links a .icon{width:18px;height:18px;fill:white}
+
+/* Alert Simulation */
+.alert-simulation{background:var(--primary);border-radius:20px;padding:2rem;margin-top:2rem;border:1px solid rgba(255,255,255,.1);max-width:800px;margin-left:auto;margin-right:auto}
+.alert-simulation-header{display:flex;align-items:center;gap:10px;color:var(--accent-light);margin-bottom:1.5rem;font-weight:600}
+.alert-simulation-header .icon{width:20px;height:20px;fill:var(--accent-light)}
+.sensor-row{display:flex;align-items:center;justify-content:space-between;padding:1rem;background:rgba(255,255,255,.05);border-radius:10px;margin-bottom:.8rem;transition:all .3s ease}
+.sensor-row:hover{background:rgba(255,255,255,.08)}
+.sensor-name{display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.9)}
+.sensor-name .icon{width:18px;height:18px;fill:var(--accent-light)}
+.sensor-value{font-family:'Courier New',monospace;color:var(--accent-light);font-weight:600}
+.sensor-bar{width:100px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;margin:0 1rem}
+.sensor-bar-fill{height:100%;border-radius:3px;transition:width 1s ease}
+.risk-display{text-align:center;padding:1.5rem;background:rgba(255,255,255,.05);border-radius:15px;margin-top:1.5rem}
+.risk-label{font-size:.9rem;color:rgba(255,255,255,.7);margin-bottom:.5rem}
+.risk-value{font-size:3rem;font-weight:800;transition:color .5s ease}
+.risk-status{display:inline-block;padding:6px 20px;border-radius:50px;font-weight:600;font-size:.9rem;margin-top:.5rem;transition:all .5s ease}
+
+/* District Table */
+.district-table{width:100%;max-width:900px;margin:2rem auto 0;border-collapse:collapse;background:white;border-radius:15px;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.08)}
+.district-table th,.district-table td{padding:1rem 1.5rem;text-align:left}
+.district-table th{background:var(--primary);color:white;font-weight:600;font-size:.9rem;text-transform:uppercase;letter-spacing:1px}
+.district-table tr:nth-child(even){background:var(--light)}
+.district-table tr:hover{background:rgba(14,165,233,.05)}
+.district-table td{color:var(--text);font-size:.95rem;border-bottom:1px solid rgba(0,0,0,.05)}
+.risk-badge{display:inline-block;padding:4px 12px;border-radius:50px;font-size:.8rem;font-weight:600}
+.risk-high{background:rgba(239,68,68,.15);color:var(--danger)}
+.risk-medium{background:rgba(245,158,11,.15);color:var(--warning)}
+.risk-low{background:rgba(16,185,129,.15);color:var(--success)}
+
+/* Responsive */
+@media (max-width:1024px){.problem-grid,.donation-container{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:768px){
+.nav-links{display:none;position:absolute;top:100%;left:0;width:100%;background:rgba(15,23,42,.98);flex-direction:column;padding:2rem;gap:1.5rem}
+.nav-links.active{display:flex}
+.mobile-menu-btn{display:block}
+.hero-stats{gap:1.5rem}
+.stat-number{font-size:2rem}
+.warning-levels{grid-template-columns:1fr}
+.steps-line{left:20px}
+.step-item,.step-item:nth-child(even){flex-direction:column;padding-left:50px}
+.step-number{position:absolute;left:0}
+.step-content{padding:0;margin-top:1rem}
+.footer-grid{grid-template-columns:1fr;text-align:center}
+.social-links{justify-content:center}
+.amount-buttons{grid-template-columns:repeat(2,1fr)}
+}
+
+/* Scroll Animations */
+.animate-on-scroll{opacity:0;transform:translateY(40px);transition:all .8s ease}
+.animate-on-scroll.visible{opacity:1;transform:translateY(0)}
+.delay-1{transition-delay:.1s}
+.delay-2{transition-delay:.2s}
+.delay-3{transition-delay:.3s}
+</style>
+</head>
+<body>
+
+<!-- SVG ICON DEFINITIONS -->
+<svg style="display:none">
+<defs>
+<symbol id="icon-mountain" viewBox="0 0 24 24"><path d="M14 6l-3.75 5 2.85 3.8-1.6 1.2C9.81 13.75 7 10 7 10l-6 8h22L14 6z"/></symbol>
+<symbol id="icon-shield" viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z"/></symbol>
+<symbol id="icon-chevron-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></symbol>
+<symbol id="icon-exclamation-triangle" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
+<symbol id="icon-play-circle" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></symbol>
+<symbol id="icon-heart" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+<symbol id="icon-microchip" viewBox="0 0 24 24"><path d="M17 3h-2v2h2V3zm-4 0h-2v2h2V3zM9 3H7v2h2V3zM5 3H3v2h2V3zm0 4H3v2h2V7zm0 4H3v2h2v-2zm0 4H3v2h2v-2zm16-8h-2v2h2V7zm0 4h-2v2h2v-2zm0 4h-2v2h2v-2zm-2 4h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0H7v2h2v-2zm-2-4H3v2h2v-2zm0-12H3v2h2V3zm16 0h-2v2h2V3zm-2 4h-2v2h2V7zm-4 0h-2v2h2V7zM7 7H5v2h2V7zm14 10h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0h-2v2h2v-2zm-4 0H7v2h2v-2z"/></symbol>
+<symbol id="icon-brain" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></symbol>
+<symbol id="icon-clock" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></symbol>
+<symbol id="icon-mobile" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z"/></symbol>
+<symbol id="icon-sms" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM9 11H7V9h2v2zm4 0h-2V9h2v2zm4 0h-2V9h2v2z"/></symbol>
+<symbol id="icon-solar" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM4 4h16v4H4V4zm0 16v-8h16v8H4zm2-6h4v4H6v-4zm6 0h4v4h-4v-4z"/></symbol>
+<symbol id="icon-filter" viewBox="0 0 24 24"><path d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"/></symbol>
+<symbol id="icon-calculator" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14H5v-2h7v2zm5-4H5v-2h12v2zm0-4H5V7h12v2z"/></symbol>
+<symbol id="icon-check-double" viewBox="0 0 24 24"><path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6.17 19l1.41-1.41L1.83 12 .41 13.41z"/></symbol>
+<symbol id="icon-hourglass" viewBox="0 0 24 24"><path d="M6 2v6h.01L6 8.01 10 12l-4 4 .01.01H6V22h12v-5.99h-.01L18 16l-4-4 4-3.99-.01-.01H18V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z"/></symbol>
+<symbol id="icon-check" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+<symbol id="icon-exclamation" viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></symbol>
+<symbol id="icon-radiation" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></symbol>
+<symbol id="icon-map-marker" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></symbol>
+<symbol id="icon-tools" viewBox="0 0 24 24"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6 6 9 1.6 4.7C.4 7.1.9 10.1 2.9 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.5-.4.5-1.1.1-1.4z"/></symbol>
+<symbol id="icon-arrow-down" viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></symbol>
+<symbol id="icon-seedling" viewBox="0 0 24 24"><path d="M2 22h20V2z"/></symbol>
+<symbol id="icon-cloud-rain" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM9 13v-2h2v2H9zm4 0v-2h2v2h-2z"/></symbol>
+<symbol id="icon-plug" viewBox="0 0 24 24"><path d="M16 1H8v6h8V1zm0 8H8v2h8V9zM5 9H3v2h2V9zm16 0h-2v2h2V9zM7 13v8h2v-6h6v6h2v-8H7z"/></symbol>
+<symbol id="icon-mobile-config" viewBox="0 0 24 24"><path d="M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14zm-4-8h-2v2h2v-2z"/></symbol>
+<symbol id="icon-check-circle" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol>
+<symbol id="icon-satellite" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM7.4 16.3l-1.4-1.4L12 8.9l6 6-1.4 1.4-4.6-4.6-4.6 4.6z"/></symbol>
+<symbol id="icon-tint" viewBox="0 0 24 24"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></symbol>
+<symbol id="icon-compass" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5.5-2.5l7.51-3.22-3.22 7.51-4.29-4.29z"/></symbol>
+<symbol id="icon-wave" viewBox="0 0 24 24"><path d="M2 12h2v2H2zm4-2h2v6H6zm4-4h2v10h-2zm4-2h2v14h-2zm4 4h2v6h-2z"/></symbol>
+<symbol id="icon-compress" viewBox="0 0 24 24"><path d="M4 9v2h16V9H4zm0 4v2h16v-2H4z"/></symbol>
+<symbol id="icon-cpu" viewBox="0 0 24 24"><path d="M6 2h12v2H6zm0 18h12v2H6zm2-18h2v2H8zm0 18h2v2H8zm4-18h2v2h-2zm0 18h2v2h-2zM2 6h2v12H2zm18 0h2v12h-2zM2 8h2v2H2zm18 0h2v2h-2zM2 14h2v2H2zm18 0h2v2h-2z"/></symbol>
+<symbol id="icon-tv" viewBox="0 0 24 24"><path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM21 17H3V5h18v12z"/></symbol>
+<symbol id="icon-volume" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></symbol>
+<symbol id="icon-credit-card" viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></symbol>
+<symbol id="icon-bank" viewBox="0 0 24 24"><path d="M4 10v7h3v-7H4zm6 0v7h3v-7h-3zm6 0v7h3v-7h-3zM2 22h20v-3H2v3zm2-5h16v-2H4v2zm-2-4h20V8H2v5zm2-7h16V4H4v2z"/></symbol>
+<symbol id="icon-donate" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></symbol>
+<symbol id="icon-checkmark" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></symbol>
+<symbol id="icon-envelope" viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></symbol>
+<symbol id="icon-phone" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></symbol>
+<symbol id="icon-university" viewBox="0 0 24 24"><path d="M12 3L1 9l4 2.18v6L12 21l7-3.82v-6l2-1.09V17h2V9L12 3zm6.82 6L12 12.72 5.18 9 12 5.28 18.82 9zM17 15.99l-5 2.73-5-2.73v-3.72L12 15l5-2.73v3.72z"/></symbol>
+<symbol id="icon-facebook" viewBox="0 0 24 24"><path d="M17 2H7a5 5 0 00-5 5v10a5 5 0 005 5h10a5 5 0 005-5V7a5 5 0 00-5-5zm3 15a3 3 0 01-3 3h-2v-5h2v-2h-2v-2a1 1 0 011-1h2V8h-2a3 3 0 00-3 3v2H9v2h2v5H7a3 3 0 01-3-3V7a3 3 0 013-3h10a3 3 0 013 3v10z"/></symbol>
+<symbol id="icon-twitter" viewBox="0 0 24 24"><path d="M22.46 6c-.77.35-1.6.58-2.46.69.88-.53 1.56-1.37 1.88-2.38-.83.5-1.75.85-2.72 1.05C18.37 4.5 17.26 4 16 4c-2.35 0-4.27 1.92-4.27 4.29 0 .34.04.67.11.98-3.56-.18-6.73-1.89-8.84-4.48-.37.63-.58 1.37-.58 2.15 0 1.49.75 2.81 1.91 3.56-.71 0-1.37-.2-1.95-.5v.03c0 2.08 1.48 3.82 3.44 4.21a4.22 4.22 0 01-1.93.07 4.28 4.28 0 004 2.98 8.521 8.521 0 01-5.33 1.84c-.34 0-.68-.02-1.02-.06C3.44 20.29 5.7 21 8.12 21 16 21 20.33 14.46 20.33 8.79c0-.19 0-.37-.01-.56.84-.6 1.56-1.36 2.14-2.23z"/></symbol>
+<symbol id="icon-instagram" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 01-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 017.8 2m-.2 2A3.6 3.6 0 004 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8a3.6 3.6 0 003.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 110 2.5 1.25 1.25 0 010-2.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6z"/></symbol>
+<symbol id="icon-linkedin" viewBox="0 0 24 24"><path d="M19 3a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h14m-.5 15.5v-5.3a3.26 3.26 0 00-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 011.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 001.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 00-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></symbol>
+<symbol id="icon-github" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></symbol>
+<symbol id="icon-menu" viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></symbol>
+</defs>
+</svg>
+
+<!-- NAVIGATION -->
+<nav class="navbar" id="navbar">
+<a href="#" class="logo"><svg class="icon"><use href="#icon-mountain"/></svg><span>SmartLandslide</span></a>
+<ul class="nav-links" id="navLinks">
+<li><a href="index.html" class="active">Home</a></li>
+<li><a href="problem.html">The Problem</a></li>
+<li><a href="solution.html">Our Solution</a></li>
+<li><a href="how-it-works.html">How It Works</a></li>
+<li><a href="install.html">Installation</a></li>
+<li><a href="technology.html">Technology</a></li>
+<li><a href="index.html #team">About Us</a></li>
+<li><a href="#donate">Support</a></li>
+</ul>
+<button class="mobile-menu-btn" id="mobileMenuBtn"><svg class="icon" style="width:24px;height:24px"><use href="#icon-menu"/></svg></button>
+</nav>
+
+<section class="solution-section" id="solution">
+<div class="section-header animate-on-scroll">
+<span class="section-tag">Our Innovation</span>
+<h2 class="section-title">A Complete Early Warning Chain</h2>
+<p class="section-desc">From soil-level measurement to smartphone notification - a unified, low-cost, multi-sensor system specifically calibrated for Sri Lankan conditions.</p>
+</div>
+<div class="features-grid">
+<div class="feature-card animate-on-scroll delay-1">
+<div class="feature-icon"><svg class="icon"><use href="#icon-microchip"/></svg></div>
+<h3>5-Sensor Fusion</h3>
+<p>Soil moisture, rainfall, MPU6050 tilt/acceleration, SW-420 vibration, and BMP280 pipe pressure sensors work together for reliable detection.</p>
+</div>
+<div class="feature-card animate-on-scroll delay-2">
+<div class="feature-icon"><svg class="icon"><use href="#icon-brain"/></svg></div>
+<h3>Intelligent Risk Scoring</h3>
+<p>Weighted algorithm with antecedent rainfall tracking (P24, P48, P72) and NBRO district-specific hazard factors for accurate classification.</p>
+</div>
+<div class="feature-card animate-on-scroll delay-3">
+<div class="feature-icon"><svg class="icon"><use href="#icon-clock"/></svg></div>
+<h3>10-Second Confirmation</h3>
+<p>Time-confirmation filter eliminates virtually all false alarms while maintaining rapid genuine-event detection within actionable timeframes.</p>
+</div>
+<div class="feature-card animate-on-scroll delay-1">
+<div class="feature-icon"><svg class="icon"><use href="#icon-mobile"/></svg></div>
+<h3>Real-Time Mobile Alerts</h3>
+<p>Flutter app with push notifications, live dashboard, and full-screen danger alerts - even when the app is closed or in background.</p>
+</div>
+<div class="feature-card animate-on-scroll delay-2">
+<div class="feature-icon"><svg class="icon"><use href="#icon-sms"/></svg></div>
+<h3>SMS Backup Alerts</h3>
+<p>SIM900A GSM module sends SMS alerts directly to registered contacts when Wi-Fi is unavailable, ensuring no one misses critical warnings.</p>
+</div>
+<div class="feature-card animate-on-scroll delay-3">
+<div class="feature-icon"><svg class="icon"><use href="#icon-solar"/></svg></div>
+<h3>Solar-Powered & Autonomous</h3>
+<p>Hybrid solar + battery power enables indefinite remote deployment on hillsides without mains electricity or frequent maintenance.</p>
+</div>
+</div>
+</section>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<footer>
+<div class="footer-grid">
+<div class="footer-brand">
+<a href="#" class="logo" style="font-size:1.5rem"><svg class="icon"><use href="#icon-mountain"/></svg><span>SmartLandslide</span></a>
+<p>An IoT-based real-time landslide detection and community alert system designed to protect Sri Lankan communities. Developed as part of IE1004 - Computational Thinking at SLIIT.</p>
+<div class="social-links">
+<a href="#"><svg class="icon"><use href="#icon-facebook"/></svg></a>
+<a href="#"><svg class="icon"><use href="#icon-twitter"/></svg></a>
+<a href="#"><svg class="icon"><use href="#icon-instagram"/></svg></a>
+<a href="#"><svg class="icon"><use href="#icon-linkedin"/></svg></a>
+<a href="#"><svg class="icon"><use href="#icon-github"/></svg></a>
+</div>
+</div>
+<div class="footer-links">
+<h4>Quick Links</h4>
+<ul>
+<li><a href="#home">Home</a></li>
+<li><a href="#problem">The Problem</a></li>
+<li><a href="#solution">Our Solution</a></li>
+<li><a href="#how-it-works">How It Works</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4>Resources</h4>
+<ul>
+<li><a href="#install">Installation Guide</a></li>
+<li><a href="#technology">Technical Specs</a></li>
+<li><a href="#team">About the Team</a></li>
+<li><a href="#donate">Support Project</a></li>
+</ul>
+</div>
+<div class="footer-links">
+<h4>Contact</h4>
+<ul>
+<li><a href="#"><svg class="icon"><use href="#icon-envelope"/></svg> info@smartlandslide.lk</a></li>
+<li><a href="#"><svg class="icon"><use href="#icon-phone"/></svg> +94 11 234 5678</a></li>
+<li><a href="#"><svg class="icon"><use href="#icon-map-marker"/></svg> SLIIT, Malabe, Sri Lanka</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<p> Smart Landslide Warning System. IE1004 - Computational Thinking. SLIIT. All rights reserved.</p>
+<p style="margin-top:.5rem;font-size:.8rem">This is an educational project. For actual deployment, consult with NBRO and DMC Sri Lanka.</p>
+</div>
+</footer>
+
+<script>
+// Navbar scroll effect
+window.addEventListener('scroll', function() {
+    const navbar = document.getElementById('navbar');
+    if (window.scrollY > 50) {
+        navbar.classList.add('scrolled');
+    }  
+});
+
+// Mobile menu toggle
+const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+const navLinks = document.getElementById('navLinks');
+mobileMenuBtn.addEventListener('click', function() {
+    navLinks.classList.toggle('active');
+});
+
+// Active nav link
+const sections = document.querySelectorAll('section[id]');
+const navLinksAll = document.querySelectorAll('.nav-links a');
+window.addEventListener('scroll', function() {
+    let current = '';
+    sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (scrollY >= sectionTop - 200) {
+            current = section.getAttribute('id');
+        }
+    });
+    navLinksAll.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+        }
+    });
+});
+
+// Scroll animations
+const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, observerOptions);
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+// Hero rain animation
+function createRain() {
+    const heroBg = document.getElementById('heroBg');
+    for (let i = 0; i < 50; i++) {
+        const drop = document.createElement('div');
+        drop.className = 'rain';
+        drop.style.left = Math.random() * 100 + '%';
+        drop.style.animationDuration = (Math.random() * 1 + 0.5) + 's';
+        drop.style.animationDelay = Math.random() * 2 + 's';
+        heroBg.appendChild(drop);
+    }
+    for (let i = 0; i < 6; i++) {
+        const shape = document.createElement('div');
+        shape.className = 'float';
+        shape.style.width = (Math.random() * 100 + 50) + 'px';
+        shape.style.height = shape.style.width;
+        shape.style.left = Math.random() * 100 + '%';
+        shape.style.top = Math.random() * 100 + '%';
+        shape.style.animationDuration = (Math.random() * 4 + 4) + 's';
+        shape.style.animationDelay = Math.random() * 2 + 's';
+        heroBg.appendChild(shape);
+    }
+}
+createRain();
+
+// Tech tabs
+function showTab(tabId) {
+    document.querySelectorAll('.tech-tab').forEach(tab => tab.classList.remove('active'));
+    document.querySelectorAll('.tech-panel').forEach(panel => panel.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+}
+
+// Alert simulation
+let simulationInterval;
+let currentScenario = 0;
+const scenarios = [
+    { soil: 45, rain: 30, tilt: 15, vib: 10, pressure: 5, risk: 42.5, status: 'SAFE', color: 'var(--success)', bg: 'rgba(16,185,129,0.2)' },
+    { soil: 70, rain: 55, tilt: 25, vib: 15, pressure: 8, risk: 78.3, status: 'SAFE', color: 'var(--success)', bg: 'rgba(16,185,129,0.2)' },
+    { soil: 75, rain: 65, tilt: 35, vib: 20, pressure: 12, risk: 88.7, status: 'WATCH', color: 'var(--warning)', bg: 'rgba(245,158,11,0.2)' },
+    { soil: 85, rain: 80, tilt: 50, vib: 45, pressure: 25, risk: 105.2, status: 'DANGER', color: 'var(--danger)', bg: 'rgba(239,68,68,0.2)' },
+    { soil: 45, rain: 30, tilt: 15, vib: 10, pressure: 5, risk: 42.5, status: 'SAFE', color: 'var(--success)', bg: 'rgba(16,185,129,0.2)' }
+];
+
+function updateSimulation() {
+    const s = scenarios[currentScenario];
+    document.getElementById('soilBar').style.width = s.soil + '%';
+    document.getElementById('soilValue').textContent = s.soil + '%';
+    document.getElementById('rainBar').style.width = s.rain + '%';
+    document.getElementById('rainValue').textContent = s.rain + '%';
+    document.getElementById('tiltBar').style.width = s.tilt + '%';
+    document.getElementById('tiltValue').textContent = (s.tilt * 0.2).toFixed(1) + ' deg';
+    document.getElementById('vibBar').style.width = s.vib + '%';
+    document.getElementById('vibValue').textContent = s.vib > 30 ? 'HIGH' : 'LOW';
+    document.getElementById('pressureBar').style.width = s.pressure + '%';
+    document.getElementById('pressureValue').textContent = (s.pressure * 0.1).toFixed(1) + ' hPa';
+    document.getElementById('riskValue').textContent = s.risk;
+    document.getElementById('riskValue').style.color = s.color;
+    document.getElementById('riskStatus').textContent = s.status;
+    document.getElementById('riskStatus').style.background = s.bg;
+    document.getElementById('riskStatus').style.color = s.color;
+    currentScenario = (currentScenario + 1) % scenarios.length;
+}
+setInterval(updateSimulation, 4000);
+
+// Donation
+let selectedAmount = 6600;
+function selectAmount(btn, amount) {
+    document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    selectedAmount = amount;
+    document.getElementById('customAmount').value = '';
+    updateDonateButton();
+}
+function updateCustomAmount(input) {
+    if (input.value) {
+        selectedAmount = parseInt(input.value);
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('active'));
+        updateDonateButton();
+    }
+}
+function updateDonateButton() {
+    document.getElementById('donateBtnText').textContent = 'Donate LKR ' + selectedAmount.toLocaleString();
+}
+function donate() {
+    alert('Thank you for your generosity!\n\nYour donation of LKR ' + selectedAmount.toLocaleString() + ' will help us deploy early warning nodes in vulnerable communities.\n\nNote: This is a demo page for educational purposes. In a real deployment, this would connect to a payment gateway.');
+}
+
+// Smooth scroll for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            navLinks.classList.remove('active');
+        }
+    });
+});
+</script>
+</body>
+</html>
