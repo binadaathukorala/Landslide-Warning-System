@@ -471,7 +471,7 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
   <div class="status-row">
     <div class="meta-chip">Last Update <strong id="last-update">--:--:--</strong></div>
     <div class="meta-chip">System <strong id="sys-status">STANDBY</strong></div>
-    <div class="meta-chip">Firebase <strong>landslide-waring-system</strong></div>
+    <div class="meta-chip">Firebase <strong>landslide-app-23250</strong></div>
   </div>
 </div>
 
@@ -496,8 +496,8 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
     <div class="card-title">Live Sensor Readings</div>
     <div class="sensors">
       <div class="sensor">
-        <div class="sensor-lbl">Rain Duration</div>
-        <div><span class="sensor-val" id="s-rain">—</span><span class="sensor-unit">hrs</span></div>
+        <div class="sensor-lbl">Rainfall</div>
+        <div><span class="sensor-val" id="s-rain">—</span><span class="sensor-unit">%</span></div>
       </div>
       <div class="sensor">
         <div class="sensor-lbl">Soil Moisture</div>
@@ -508,7 +508,7 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
         <div><span class="sensor-val" id="s-tilt">—</span><span class="sensor-unit">°</span></div>
       </div>
       <div class="sensor">
-        <div class="sensor-lbl">Pressure Δ</div>
+        <div class="sensor-lbl">Pressure</div>
         <div><span class="sensor-val" id="s-pressure">—</span><span class="sensor-unit">hPa</span></div>
       </div>
       <div class="sensor sensor-wide">
@@ -526,7 +526,7 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
       <div class="card-title">Sensor Trends</div>
       <div class="chart-lbl">Risk Score History</div>
       <div class="chart-wrap"><canvas id="cRisk"></canvas></div>
-      <div class="chart-lbl" style="margin-top:10px;">Soil Moisture % &amp; Rain (×10)</div>
+      <div class="chart-lbl" style="margin-top:10px;">Soil Moisture % &amp; Rainfall %</div>
       <div class="chart-wrap"><canvas id="cSoil"></canvas></div>
     </div>
 
@@ -703,13 +703,18 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <!-- Firebase 9 compat SDK — loads synchronously, no dynamic import needed -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 // ═══════════════════════════════════════
 // FIREBASE CONFIG — hardcoded, no UI input
 // ═══════════════════════════════════════
-const FB_API_KEY  = "AIzaSyBGHdEb-fw2hSjPuykgIAj3hIFfyaSiJrA";
-const FB_DB_URL   = "https://landslide-waring-system-default-rtdb.asia-southeast1.firebasedatabase.app";
+const FB_CONFIG = {
+  apiKey: "AIzaSyAQ96QYX2i_FcTA95RfjfA5_4mj3AVn4qU",
+  authDomain: "landslide-app-23250.firebaseapp.com",
+  databaseURL: "https://landslide-app-23250-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "landslide-app-23250"
+};
 
 // ═══════════════════════════════════════
 // STATE
@@ -776,7 +781,7 @@ function initCharts(){
     type:"line",
     data:{labels:Array(12).fill(""),datasets:[
       {label:"Soil%",data:Array(12).fill(null),borderColor:"#00e676",backgroundColor:"rgba(0,230,118,0.06)",borderWidth:2,pointRadius:2,tension:0.45},
-      {label:"Rain×10",data:Array(12).fill(null),borderColor:"#26c6da",backgroundColor:"rgba(38,198,218,0.04)",borderWidth:2,pointRadius:2,tension:0.45}
+      {label:"Rainfall%",data:Array(12).fill(null),borderColor:"#26c6da",backgroundColor:"rgba(38,198,218,0.04)",borderWidth:2,pointRadius:2,tension:0.45}
     ]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:true,labels:{boxWidth:8,padding:8,font:{size:9}}}},
@@ -801,7 +806,7 @@ document.querySelectorAll(".dp").forEach(el=>{
     const lvlEl=document.getElementById("mtt-lvl");
     lvlEl.textContent=score!==null?rl(score):"—";
     lvlEl.className="mtt-val"+(score!==null?" "+rc(score):"");
-    document.getElementById("mtt-rain").textContent=sensors.rainDuration!==undefined?sensors.rainDuration+" hrs":"—";
+    document.getElementById("mtt-rain").textContent=sensors.rainfall!==undefined?sensors.rainfall+"%":"—";
     document.getElementById("mtt-soil").textContent=sensors.soilMoisture!==undefined?sensors.soilMoisture+"%":"—";
     document.getElementById("mtt-tilt").textContent=sensors.tiltAngle!==undefined?sensors.tiltAngle+"°":"—";
     mtt.style.display="block";
@@ -840,10 +845,10 @@ function updateMainCard(data){
 
 function updateSensors(sensors,district){
   if(!sensors) return;
-  setV("s-rain",sensors.rainDuration,1);
+  setV("s-rain",sensors.rainfall,0);
   setV("s-soil",sensors.soilMoisture,0);
   setV("s-tilt",sensors.tiltAngle,1);
-  setV("s-pressure",sensors.pressureChange,1);
+  setV("s-pressure",sensors.pressure,1);
   document.getElementById("s-vib").textContent=sensors.vibration?"🔴 Movement Detected":"🟢 Normal";
   if(district) S.sensorCache[district.toLowerCase()]=sensors;
 }
@@ -855,7 +860,7 @@ function setV(id,val,dec){
 function tick(el){ el.classList.add("ntick"); setTimeout(()=>el.classList.remove("ntick"),350); }
 
 function updateCharts(data){
-  const score=data.risk?.score??0, soil=data.sensors?.soilMoisture??0, rain=(data.sensors?.rainDuration??0)*10;
+  const score=data.risk?.score??0, soil=data.sensors?.soilMoisture??0, rain=data.sensors?.rainfall??0;
   const MAX=12;
   S.riskHist.push(score); S.soilHist.push(soil); S.rainHist.push(rain);
   if(S.riskHist.length>MAX){ S.riskHist.shift(); S.soilHist.shift(); S.rainHist.shift(); }
@@ -923,29 +928,64 @@ function handleData(data){
     updateMap(data.district,data.risk.score,data.sensors);
 }
 
+function stationRiskScore(station){
+  const status = String(station.status || "").toLowerCase();
+  if(status === "danger") return 0.85;
+  if(status === "warning") return 0.55;
+  if(status === "safe") return 0.20;
+
+  const rain = Number(station.rainfall) || 0;
+  const soil = Number(station.moisture) || 0;
+  const tilt = Number(station.tiltAngle) || 0;
+  const pressure = Number(station.pressure) || 1013;
+  const pressureRisk = pressure < 990 ? 1 : pressure < 1000 ? 0.55 : 0;
+  return Math.max(rain / 100, soil / 100, tilt / 25, pressureRisk, 0.05);
+}
+
+function stationToDashboardData(station){
+  const sector = station.sector || "Western Province";
+  return {
+    id: station.id || "ST001",
+    district: station.district || "Colombo",
+    province: sector,
+    risk: { score: Math.max(0, Math.min(1, stationRiskScore(station))) },
+    sensors: {
+      rainfall: Number(station.rainfall) || 0,
+      soilMoisture: Number(station.moisture) || 0,
+      tiltAngle: Number(station.tiltAngle) || 0,
+      pressure: Number(station.pressure) || 0,
+      vibration: String(station.status || "").toLowerCase() === "danger"
+    }
+  };
+}
+
 // ═══════════════════════════════════════
 // FIREBASE — compat SDK, no dynamic import
 // ═══════════════════════════════════════
-function connectFirebase(){
+async function connectFirebase(){
   setConnected("connecting");
   try{
     // Initialize Firebase using compat SDK (loaded via <script> tags above)
     if(firebase.apps.length === 0){
-      firebase.initializeApp({ apiKey: FB_API_KEY, databaseURL: FB_DB_URL });
+      firebase.initializeApp(FB_CONFIG);
     }
+    await firebase.auth().signInAnonymously();
     const db = firebase.database();
 
-    // Main sensor node — /landslideSystem
-    db.ref("/landslideSystem").on("value", snap=>{
+    // ESP32 app uploads live station data here.
+    db.ref("/stations/ST001").on("value", snap=>{
       const d = snap.val();
-      if(d){ setConnected("online"); handleData(d); }
+      if(d){ setConnected("online"); handleData(stationToDashboardData(d)); }
       else { setConnected("online"); }
     }, err=>{ console.error(err); setConnected("offline"); });
 
-    // Per-district map updates — /districts
-    db.ref("/districts").on("value", snap=>{
+    // Optional: if more station nodes are added later, color them on the map too.
+    db.ref("/stations").on("value", snap=>{
       const d = snap.val();
-      if(d) Object.keys(d).forEach(k => updateMap(k, d[k]?.risk ?? 0, d[k]?.sensors));
+      if(d) Object.keys(d).forEach(k => {
+        const station = stationToDashboardData(d[k] || {});
+        updateMap(station.district, station.risk.score, station.sensors);
+      });
     });
 
   }catch(e){
