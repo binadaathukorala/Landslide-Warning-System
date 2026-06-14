@@ -703,7 +703,6 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 
@@ -766,6 +765,10 @@ const rsm = s => s < 0.40 ? "✔ Area is Currently Safe" : s < 0.70 ? "⚠ Monit
 
 
 function initCharts(){
+  if(typeof Chart === "undefined"){
+    console.warn("Chart.js unavailable; live map will continue without charts.");
+    return;
+  }
   Chart.defaults.color="rgba(255,255,255,0.4)";
   Chart.defaults.font.family="monospace";
   Chart.defaults.font.size=9;
@@ -860,6 +863,7 @@ function setV(id,val,dec){
 function tick(el){ el.classList.add("ntick"); setTimeout(()=>el.classList.remove("ntick"),350); }
 
 function updateCharts(data){
+  if(!S.charts.risk || !S.charts.soil) return;
   const score=data.risk?.score??0, soil=data.sensors?.soilMoisture??0, rain=data.sensors?.rainfall??0;
   const MAX=12;
   S.riskHist.push(score); S.soilHist.push(soil); S.rainHist.push(rain);
@@ -889,11 +893,17 @@ function addHistory(data){
 }
 
 function updateMap(name,score,sensors){
+  name = normalizeDistrict(name);
+  if(!name) return;
   const level=rc(score);
+  let matched=false;
   document.querySelectorAll(".dp").forEach(el=>{
-    if(el.dataset.district.toLowerCase()===name.toLowerCase())
+    if(el.dataset.district.toLowerCase()===name.toLowerCase()){
       el.className="dp "+level;
+      matched=true;
+    }
   });
+  if(!matched) console.warn("District not found on map:", name);
   S.districtData[name.toLowerCase()]={score,level};
   if(sensors) S.sensorCache[name.toLowerCase()]=sensors;
 }
@@ -944,9 +954,10 @@ function stationRiskScore(station){
 
 function stationToDashboardData(station){
   const sector = station.sector || "Western Province";
+  const district = normalizeDistrict(station.district) || districtFromSector(sector);
   return {
     id: station.id || "ST001",
-    district: station.district || "Colombo",
+    district,
     province: sector,
     risk: { score: Math.max(0, Math.min(1, stationRiskScore(station))) },
     sensors: {
@@ -959,38 +970,120 @@ function stationToDashboardData(station){
   };
 }
 
+function normalizeDistrict(value){
+  const raw = String(value || "").trim();
+  const key = raw.toLowerCase().replace(/\s+/g," ");
+  const districts = [
+    "Ampara","Anuradhapura","Badulla","Batticaloa","Colombo","Galle","Gampaha",
+    "Hambantota","Jaffna","Kalutara","Kandy","Kegalle","Kilinochchi","Kurunegala",
+    "Mannar","Matale","Matara","Monaragala","Mullaitivu","Nuwara Eliya",
+    "Polonnaruwa","Puttalam","Ratnapura","Trincomalee","Vavuniya"
+  ];
+  return districts.find(d => d.toLowerCase() === key) || null;
+}
+
+function districtFromSector(sector){
+  const s = String(sector || "").toLowerCase();
+  const namedDistrict = [
+    "Ampara","Anuradhapura","Badulla","Batticaloa","Colombo","Galle","Gampaha",
+    "Hambantota","Jaffna","Kalutara","Kandy","Kegalle","Kilinochchi","Kurunegala",
+    "Mannar","Matale","Matara","Monaragala","Mullaitivu","Nuwara Eliya",
+    "Polonnaruwa","Puttalam","Ratnapura","Trincomalee","Vavuniya"
+  ].find(d => s.includes(d.toLowerCase()));
+  if(namedDistrict) return namedDistrict;
+  if(s.includes("north western")) return "Kurunegala";
+  if(s.includes("north central")) return "Anuradhapura";
+  if(s.includes("western")) return "Colombo";
+  if(s.includes("central")) return "Kandy";
+  if(s.includes("southern")) return "Galle";
+  if(s.includes("northern")) return "Jaffna";
+  if(s.includes("eastern")) return "Batticaloa";
+  if(s.includes("uva")) return "Badulla";
+  if(s.includes("sabaragamuwa")) return "Ratnapura";
+  return null;
+}
+
+function updateDashboardFromStations(rawStations){
+  const stations = Object.entries(rawStations || {}).map(([id,value]) =>
+    stationToDashboardData({ id, ...(value || {}) })
+  );
+  if(!stations.length) return;
+
+  stations.sort((a,b) => b.risk.score - a.risk.score);
+  handleData(stations[0]);
+
+  document.querySelectorAll(".dp").forEach(el => { el.className = "dp"; });
+  S.districtData = {};
+  S.sensorCache = {};
+
+  const districtMax = new Map();
+  stations.forEach(station => {
+    if(!station.district) return;
+    const current = districtMax.get(station.district);
+    if(!current || station.risk.score > current.risk.score){
+      districtMax.set(station.district, station);
+    }
+  });
+  districtMax.forEach(station =>
+    updateMap(station.district, station.risk.score, station.sensors)
+  );
+}
 
 
 
-async function connectFirebase(){
+
+const STATIONS_URL = FB_CONFIG.databaseURL + "/stations.json";
+let restPollTimer = null;
+
+async function loadStationsFromRest(){
+  try{
+    const response = await fetch(STATIONS_URL, { cache: "no-store" });
+    if(!response.ok) throw new Error("Database request failed: " + response.status);
+    const stations = await response.json();
+    setConnected("online");
+    if(stations) updateDashboardFromStations(stations);
+    return true;
+  }catch(error){
+    console.error("Firebase REST error:", error);
+    setConnected("offline");
+    return false;
+  }
+}
+
+function startRestPolling(){
+  loadStationsFromRest();
+  if(!restPollTimer){
+    restPollTimer = setInterval(loadStationsFromRest, 15000);
+  }
+}
+
+function connectFirebase(){
   setConnected("connecting");
+  if(typeof firebase === "undefined"){
+    console.warn("Firebase SDK unavailable; using REST polling.");
+    startRestPolling();
+    return;
+  }
+
   try{
     
     if(firebase.apps.length === 0){
       firebase.initializeApp(FB_CONFIG);
     }
-    await firebase.auth().signInAnonymously();
     const db = firebase.database();
 
-    
-    db.ref("/stations/ST001").on("value", snap=>{
-      const d = snap.val();
-      if(d){ setConnected("online"); handleData(stationToDashboardData(d)); }
-      else { setConnected("online"); }
-    }, err=>{ console.error(err); setConnected("offline"); });
-
-    
     db.ref("/stations").on("value", snap=>{
       const d = snap.val();
-      if(d) Object.keys(d).forEach(k => {
-        const station = stationToDashboardData(d[k] || {});
-        updateMap(station.district, station.risk.score, station.sensors);
-      });
+      setConnected("online");
+      if(d) updateDashboardFromStations(d);
+    }, err=>{
+      console.error("Firebase database error:", err);
+      startRestPolling();
     });
 
   }catch(e){
     console.error("Firebase error:", e);
-    setConnected("offline");
+    startRestPolling();
   }
 }
 
