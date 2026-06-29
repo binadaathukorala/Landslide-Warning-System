@@ -930,12 +930,13 @@ document.querySelectorAll(".dp").forEach(el=>{
     const d=S.districtData[n.toLowerCase()];
     const sensors=S.sensorCache[n.toLowerCase()]||{};
     const score=d?d.score:null;
+    const lvl=d?d.level:null;
     document.getElementById("mtt-name").textContent=n;
     document.getElementById("mtt-prov").textContent=p;
     document.getElementById("mtt-risk").textContent=score!==null?score.toFixed(2):"—";
     const lvlEl=document.getElementById("mtt-lvl");
-    lvlEl.textContent=score!==null?rl(score):"—";
-    lvlEl.className="mtt-val"+(score!==null?" "+rc(score):"");
+    lvlEl.textContent=lvl?lvl.toUpperCase():"—";
+    lvlEl.className="mtt-val"+(lvl?" "+lvl:"");
     // 24h worst status
     const w24El=document.getElementById("mtt-24h");
     const worst24=h24GetWorst(n);
@@ -960,13 +961,24 @@ document.querySelectorAll(".dp").forEach(el=>{
 
 
 function updateMainCard(data){
-  const score=data.risk?.score??0, level=rc(score);
+  const score = data.risk?.score ?? 0;
+  const level = data.riskLevel
+    ? data.riskLevel.toLowerCase()
+    : rc(score);
   document.getElementById("wc-district").textContent=data.district||"—";
   document.getElementById("wc-province").textContent=data.province||"—";
   const rl_el=document.getElementById("risk-lvl");
   rl_el.className="risk-level "+level;
-  document.getElementById("risk-icon").textContent=ri(score);
-  document.getElementById("risk-txt").textContent=rl(score);
+  if(level==="safe"){
+    document.getElementById("risk-icon").textContent="🟢";
+    document.getElementById("risk-txt").textContent="SAFE";
+  } else if(level==="warning"){
+    document.getElementById("risk-icon").textContent="⚠️";
+    document.getElementById("risk-txt").textContent="WARNING";
+  } else {
+    document.getElementById("risk-icon").textContent="🔴";
+    document.getElementById("risk-txt").textContent="DANGER";
+  }
   const sn=document.getElementById("score-num");
  
   const newPct = score*100;
@@ -978,7 +990,10 @@ function updateMainCard(data){
   document.getElementById("bar-fg").style.width=(score*100)+"%";
   document.getElementById("warn-card").className="card warn-card "+level;
   const sb=document.getElementById("status-badge");
-  sb.className="status-badge "+level; sb.textContent=rsm(score);
+  sb.className="status-badge "+level;
+  sb.textContent = level==="safe" ? "✔ Area is Currently Safe"
+    : level==="warning" ? "⚠ Monitor Area Closely"
+    : "🚨 Evacuate — Immediate Danger!";
   if(level==="danger"&&!S.dangerAlerted){ S.dangerAlerted=true; showAlert(data.district||"Unknown"); }
   if(level!=="danger") S.dangerAlerted=false;
 
@@ -1045,13 +1060,14 @@ function updateCharts(data){
 
 function pushWarningHistory(data){
   const score = data.risk?.score ?? 0;
-  push(ref(db, "landslideSystem"), {
+  const level = data.riskLevel ? data.riskLevel.toUpperCase() : rl(score);
+  push(ref(db, "warningHistory"), {
     timestamp:  serverTimestamp(),
     province:   data.province || "—",
     district:   data.district || "—",
     division:   data.division || "—",
     riskScore:  Math.round(score*100),
-    riskLevel:  rl(score)
+    riskLevel:  level
   });
 }
 
@@ -1143,10 +1159,10 @@ setInterval(()=>{
   });
 }, 60000); 
 
-function updateMap(name,score,sensors,divisionName){
+function updateMap(name,score,sensors,divisionName,riskLevel){
   name = normalizeDistrict(name);
   if(!name) return;
-  const level=rc(score);
+  const level = riskLevel ? riskLevel.toLowerCase() : rc(score);
   h24Record(name, level);
   const worst24 = h24GetWorst(name) || level;
   let matched=false;
@@ -1189,6 +1205,7 @@ function estimateDivisionRisk(districtName, divisionName){
     const sensors = S.sensorCache[key] || {};
     return {
       score: base.score,
+      level: base.level || null,
       rainfall:     sensors.rainfall     !== undefined ? sensors.rainfall     : null,
       soilMoisture: sensors.soilMoisture !== undefined ? sensors.soilMoisture : null,
       tiltAngle:    sensors.tiltAngle    !== undefined ? sensors.tiltAngle    : null,
@@ -1201,6 +1218,7 @@ function estimateDivisionRisk(districtName, divisionName){
   const NO_SENSOR_SCORE = 0.08;
   return {
     score: NO_SENSOR_SCORE,
+    level: "safe",
     rainfall: null, soilMoisture: null, tiltAngle: null,
     hasLiveDistrict: !!base,
     isLiveDivision: false
@@ -1232,7 +1250,7 @@ function renderDivisionGrid(districtName){
 
   ELECTORAL_DIVISIONS[districtName].forEach(divName=>{
     const r = estimateDivisionRisk(districtName, divName);
-    const level = rc(r.score);
+    const level = r.level || rc(r.score);
 
     const tile = document.createElement("div");
     tile.className = "dtile "+level;
@@ -1256,7 +1274,7 @@ function renderDivisionGrid(districtName){
 
 function renderDivisionResult(districtName, divisionName){
   const r = estimateDivisionRisk(districtName, divisionName);
-  const level = rc(r.score);
+  const level = r.level || rc(r.score);
 
   document.getElementById("div-empty").style.display = "none";
   const card = document.getElementById("div-result");
@@ -1267,7 +1285,7 @@ function renderDivisionResult(districtName, divisionName){
 
   const badge = document.getElementById("div-result-badge");
   badge.className = "div-result-badge "+level;
-  badge.textContent = rl(r.score);
+  badge.textContent = level.toUpperCase();
 
   const bar = document.getElementById("div-bar-fg");
   bar.className = "div-bar-fg "+level;
@@ -1352,7 +1370,7 @@ function handleData(data){
   updateCharts(data);
   updateTime();
   if(data.district&&data.risk?.score!==undefined)
-    updateMap(data.district,data.risk.score,data.sensors,data.division);
+    updateMap(data.district,data.risk.score,data.sensors,data.division,data.riskLevel);
 }
 
 function normalizeDistrict(value){
@@ -1380,6 +1398,7 @@ function applyLandslideSystem(node){
     district: node.district || "—",
     division: node.division || "—",
     risk: { score },
+    riskLevel: node.riskLevel || null,
     sensors: {
       rainfall:      Number(node.rainDuration) || 0,  
       soilMoisture:  Number(node.soilMoisture) || 0,
@@ -1408,7 +1427,7 @@ function applyRiskMap(riskMapObj){
     
     const rawScore = Number(entry.riskScore);
     const score = Number.isFinite(rawScore) ? Math.max(0, Math.min(1, rawScore)) : 0;
-    updateMap(district, score, entry.sensors || null);
+    updateMap(district, score, entry.sensors || null, entry.division, entry.riskLevel);
   });
 }
 
