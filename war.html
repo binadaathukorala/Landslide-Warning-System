@@ -39,7 +39,6 @@ body::before{
 }
 .rain-canvas{position:fixed;inset:0;z-index:0;opacity:0.12;pointer-events:none;}
 
-/* ── NAV ── */
 nav{
   position:relative;z-index:100;
   display:flex;align-items:center;justify-content:space-between;
@@ -65,7 +64,6 @@ nav{
 .nav-links a.active{color:var(--cyan2);background:rgba(0,188,212,0.08);}
 .nav-right{display:flex;align-items:center;gap:8px;}
 
-/* ── TOPBAR (replaces hero) ── */
 .topbar{
   position:relative;z-index:1;
   display:flex;align-items:center;justify-content:space-between;
@@ -107,7 +105,6 @@ nav{
 @keyframes pdot{0%,100%{opacity:1;transform:scale(1)}50%{opacity:0.4;transform:scale(0.7)}}
 @keyframes blink{50%{opacity:0}}
 
-/* ── DASH GRID ── */
 .dash{
   position:relative;z-index:1;
   max-width:1800px;margin:0 auto;
@@ -125,7 +122,6 @@ nav{
   min-width:0;
 }
 
-/* ── CARDS ── */
 .card{
   background:var(--card-bg);
   border:1px solid var(--border);
@@ -142,7 +138,6 @@ nav{
 }
 .card-title::before{content:"";width:2px;height:12px;background:linear-gradient(var(--cyan),var(--blue2));border-radius:2px;}
 
-/* ── RISK CARD ── */
 .warn-card{
   display:flex;flex-direction:column;gap:0;flex:0 0 auto;
 }
@@ -179,7 +174,6 @@ nav{
 .status-badge.warning{background:var(--warn-d);color:var(--warn);border:1px solid rgba(255,202,40,0.22);}
 .status-badge.danger{background:var(--dang-d);color:var(--dang);border:1px solid rgba(255,23,68,0.22);}
 
-/* ── SENSORS ── */
 .sensor-panel{flex:0 0 auto;}
 .sensors{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
 .sensor{
@@ -193,7 +187,6 @@ nav{
 .sensor-unit{font-size:0.6rem;color:var(--w50);margin-left:2px;}
 .sensor-wide{grid-column:1/3;}
 
-/* ── MID COL (now stacked inside left rail) ── */
 .mid-col{display:flex;flex-direction:column;gap:12px;}
 .charts-card{flex:0 0 auto;}
 .chart-wrap{height:70px;position:relative;}
@@ -209,7 +202,6 @@ nav{
 .rbadge.warning{background:var(--warn-d);color:var(--warn);border:1px solid rgba(255,202,40,0.2);}
 .rbadge.danger{background:var(--dang-d);color:var(--dang);border:1px solid rgba(255,23,68,0.2);}
 
-/* ── MAP PANEL (now the visual centerpiece) ── */
 .map-panel{
   grid-column:2/3;grid-row:1/3;
   display:flex;flex-direction:column;gap:10px;
@@ -218,7 +210,6 @@ nav{
 .map-wrap{flex:1;position:relative;min-height:780px;display:flex;align-items:center;justify-content:center;}
 #lk-map{width:100%;height:100%;max-height:none;}
 
-/* ── MAP PATHS ── */
 .dp{
   fill:rgba(21,101,192,0.18);
   stroke:rgba(0,188,212,0.18);stroke-width:1;
@@ -234,7 +225,6 @@ nav{
 .dp.danger:hover{fill:rgba(255,23,68,0.85);}
 @keyframes dd{0%,100%{fill:rgba(255,23,68,0.58)}50%{fill:rgba(255,23,68,0.85)}}
 
-/* ── TOOLTIP ── */
 .mtt{
   position:absolute;
   background:rgba(5,12,26,0.98);
@@ -250,14 +240,12 @@ nav{
 .mtt-val{color:var(--white);font-family:monospace;font-weight:600;}
 .mtt-val.safe{color:var(--safe);} .mtt-val.warning{color:var(--warn);} .mtt-val.danger{color:var(--dang);}
 
-/* ── LEGEND ── */
 .legend{display:flex;gap:10px;flex-wrap:wrap;}
 .li{display:flex;align-items:center;gap:5px;font-size:0.62rem;color:var(--w50);}
 .ld{width:9px;height:9px;border-radius:2px;}
 .ld.def{background:rgba(21,101,192,0.35);border:1px solid rgba(0,188,212,0.35);}
 .ld.safe{background:var(--safe);} .ld.warning{background:var(--warn);} .ld.danger{background:var(--dang);}
 
-/* ── DIVISION PANEL ── */
 .div-panel{grid-column:1/3;}
 .div-sub{font-size:0.7rem;color:var(--w50);margin:-8px 0 14px;line-height:1.55;}
 .div-controls{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:14px;}
@@ -351,7 +339,6 @@ nav{
 .div-grid::-webkit-scrollbar{width:5px;}
 .div-grid::-webkit-scrollbar-thumb{background:rgba(0,188,212,0.3);border-radius:3px;}
 
-/* ── DANGER MODAL ── */
 .danger-overlay{position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;}
 .danger-overlay.active{display:flex;animation:ofade 0.3s ease;}
 @keyframes ofade{from{opacity:0}to{opacity:1}}
@@ -372,7 +359,6 @@ nav{
 .dm-close{background:rgba(255,255,255,0.05);border:1px solid var(--w20);color:var(--w80);border-radius:7px;padding:7px 20px;font-size:0.78rem;font-family:"Inter",sans-serif;cursor:pointer;transition:all 0.2s;}
 .dm-close:hover{background:var(--w10);color:var(--white);}
 
-/* ── RESPONSIVE ── */
 @media(max-width:1180px){
   .dash{grid-template-columns:1fr;grid-template-rows:auto auto;}
   .left-rail{grid-column:1/2;grid-row:1/2;}
@@ -398,7 +384,6 @@ nav{
 ::-webkit-scrollbar-track{background:var(--navy);}
 ::-webkit-scrollbar-thumb{background:rgba(0,188,212,0.28);border-radius:2px;}
 
-/* ── FOOTER ── */
 footer{
   background:var(--navy2);color:var(--white);
   padding:50px 5% 26px;position:relative;z-index:10;
@@ -804,15 +789,12 @@ footer{
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
 <script type="module">
-// ============================================================
-// FIREBASE v10 MODULAR SDK
-// ============================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
   getDatabase, ref, onValue, push, set, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
-// Live Firebase project config (landslide-waring-system).
 const FB_CONFIG = {
    apiKey: "AIzaSyBGHdEb-fw2hSjPuykgIAj3hIFfyaSiJrA",
    authDomain: "landslide-waring-system.firebaseapp.com",
@@ -840,17 +822,11 @@ const S = {
   dangerAlerted: false,
   lastLevel:    null,
   charts: { risk: null, soil: null },
-  // 24-hour worst-status tracking per district
-  // { districtKey: { worstLevel: "safe"|"warning"|"danger", events: [{level, ts}] } }
+  
   h24: {}
 };
 
 
-
-
-// District -> Electoral (Polling) Divisions, per district.
-// Mirrors the official 25-district / 160-electoral-division breakdown
-// used for Sri Lankan parliamentary elections.
 const ELECTORAL_DIVISIONS = {
   "Colombo":        ["Colombo-North","Colombo-Central","Borella","Colombo-East","Colombo-West","Dehiwala","Ratmalana","Kolonnawa","Kotte","Kaduwela","Avissawella","Homagama","Maharagama","Kesbewa","Moratuwa"],
   "Gampaha":        ["Wattala","Negombo","Katana","Divulapitiya","Mirigama","Minuwangoda","Attanagalla","Gampaha","Ja-Ela","Mahara","Dompe","Biyagama","Kelaniya"],
@@ -886,7 +862,7 @@ const ALL_DISTRICT_NAMES = Object.keys(ELECTORAL_DIVISIONS).sort();
 const rc  = s => s < 0.40 ? "safe" : s < 0.70 ? "warning" : "danger";
 const rl  = s => s < 0.40 ? "SAFE" : s < 0.70 ? "WARNING" : "DANGER";
 const ri  = s => s < 0.40 ? "🟢" : s < 0.70 ? "⚠️" : "🔴";
-const rsm = s => s < 0.40 ? "✔ Area is Currently Safe" : s < 0.70 ? "⚠ Monitor Area Closely" : "🚨 Evacuate — Immediate Danger!";
+const rsm = s => s < 0.40 ? "✔ Area is Currently Safe" : s < 0.70 ? "⚠ Monitor Area Closely" : "Evacuate — Immediate Danger!";
 
 
 
@@ -992,8 +968,7 @@ function updateMainCard(data){
   document.getElementById("risk-icon").textContent=ri(score);
   document.getElementById("risk-txt").textContent=rl(score);
   const sn=document.getElementById("score-num");
-  // Risk Score displayed as a percentage (0–100%), animated smoothly from
-  // the previously shown value rather than jumping instantly.
+ 
   const newPct = score*100;
   const fromPct = (typeof S.lastScorePct === "number") ? S.lastScorePct : newPct;
   animateScorePercent(sn, fromPct, newPct);
@@ -1006,8 +981,7 @@ function updateMainCard(data){
   sb.className="status-badge "+level; sb.textContent=rsm(score);
   if(level==="danger"&&!S.dangerAlerted){ S.dangerAlerted=true; showAlert(data.district||"Unknown"); }
   if(level!=="danger") S.dangerAlerted=false;
-  // Log a warningHistory entry only on a transition INTO warning/danger,
-  // never on every onValue tick while the level is unchanged.
+
   if(level!==S.lastLevel && (level==="warning"||level==="danger")){
     pushWarningHistory(data);
   }
@@ -1030,9 +1004,7 @@ function setV(id,val,dec){
 }
 function tick(el){ el.classList.add("ntick"); setTimeout(()=>el.classList.remove("ntick"),350); }
 
-// Smoothly animates the risk-score percentage text from its previous value
-// to the new one (e.g. 35% → 78%) instead of an instant jump.
-// Cancels any in-flight animation on the same element before starting a new one.
+
 function animateScorePercent(el, fromPct, toPct, duration=600){
   if(el._scoreAnimFrame) cancelAnimationFrame(el._scoreAnimFrame);
   const start = performance.now();
@@ -1070,8 +1042,7 @@ function updateCharts(data){
   cs.update("active");
 }
 
-// Pushes a new entry to /warningHistory whenever the system enters
-// WARNING or DANGER (called from updateMainCard on a level transition).
+
 function pushWarningHistory(data){
   const score = data.risk?.score ?? 0;
   push(ref(db, "warningHistory"), {
@@ -1084,8 +1055,7 @@ function pushWarningHistory(data){
   });
 }
 
-// Renders the /warningHistory table from a live Firebase snapshot.
-// Newest first; Firebase push() keys sort chronologically so we just reverse.
+
 function renderWarningHistory(historyObj){
   const body = document.getElementById("hist-body");
   if(!historyObj){
@@ -1109,12 +1079,8 @@ function renderWarningHistory(historyObj){
   }).join("");
 }
 
-// ============================================================
-// 24-HOUR STATUS HISTORY SYSTEM
-// Tracks the worst alert level seen per district in the last 24h.
-// Map colors reflect: safe=green(unchanged), warning=yellow, danger=red.
-// ============================================================
-const H24_WINDOW = 24 * 60 * 60 * 1000; // 24 hours in ms
+
+const H24_WINDOW = 24 * 60 * 60 * 1000; 
 const LEVEL_RANK = { safe: 0, warning: 1, danger: 2 };
 
 function h24Key(districtName){ return districtName.toLowerCase(); }
@@ -1123,14 +1089,10 @@ function h24Record(districtName, level){
   const key = h24Key(districtName);
   if(!S.h24[key]) S.h24[key] = { events: [] };
   const now = Date.now();
-  // Prune events older than 24h
   S.h24[key].events = S.h24[key].events.filter(e => now - e.ts < H24_WINDOW);
-  // Add current event
   S.h24[key].events.push({ level, ts: now });
-  // Recalculate worst level in last 24h
   S.h24[key].worstLevel = S.h24[key].events.reduce((worst, e) =>
     LEVEL_RANK[e.level] > LEVEL_RANK[worst] ? e.level : worst, "safe");
-  // Persist to localStorage so refreshes keep 24h history
   try {
     localStorage.setItem("h24_" + key, JSON.stringify(S.h24[key]));
   } catch(e) {}
@@ -1139,7 +1101,6 @@ function h24Record(districtName, level){
 function h24GetWorst(districtName){
   const key = h24Key(districtName);
   if(!S.h24[key]) {
-    // Try to restore from localStorage
     try {
       const saved = localStorage.getItem("h24_" + key);
       if(saved) {
@@ -1156,20 +1117,15 @@ function h24GetWorst(districtName){
 }
 
 function h24Apply(districtName){
-  // Apply 24h worst color to a district's SVG path
   const worst = h24GetWorst(districtName);
   if(!worst) return;
   document.querySelectorAll(".dp").forEach(el=>{
     if(el.dataset.district.toLowerCase() === districtName.toLowerCase()){
-      // Keep the base "dp" class + the 24h worst level class.
-      // NOTE: SVG elements expose a read-only className (SVGAnimatedString),
-      // so plain `el.className = ...` throws. Use setAttribute instead.
       el.setAttribute("class", "dp " + worst);
     }
   });
 }
 
-// Periodically refresh map colors as old events expire out of 24h window
 setInterval(()=>{
   Object.keys(S.h24).forEach(key=>{
     const now = Date.now();
@@ -1185,29 +1141,23 @@ setInterval(()=>{
       if(match) h24Apply(match);
     }
   });
-}, 60000); // check every minute
+}, 60000); 
 
 function updateMap(name,score,sensors,divisionName){
   name = normalizeDistrict(name);
   if(!name) return;
   const level=rc(score);
-  // Record this event in 24h history
   h24Record(name, level);
   const worst24 = h24GetWorst(name) || level;
   let matched=false;
   document.querySelectorAll(".dp").forEach(el=>{
     if(el.dataset.district.toLowerCase()===name.toLowerCase()){
-      // Color reflects worst status in last 24h, not just current.
-      // NOTE: SVG elements expose a read-only className (SVGAnimatedString),
-      // so plain `el.className = ...` throws "has only a getter".
-      // setAttribute is the correct way to set class on SVG elements.
+      
       el.setAttribute("class", "dp "+worst24);
       matched=true;
     }
   });
   if(!matched) console.warn("District not found on map:", name);
-  // liveDivision: the one electoral division actually co-located with this
-  // district's physical sensor node (from Firebase's `division` field), if any.
   const liveDivision = (divisionName && divisionName!=="—") ? divisionName : null;
   S.districtData[name.toLowerCase()]={score,level,worst24,liveDivision};
   if(sensors) S.sensorCache[name.toLowerCase()]=sensors;
@@ -1218,32 +1168,20 @@ function updateMap(name,score,sensors,divisionName){
 
 
 
-// ============================================================
-// DS DIVISION RISK LOOKUP
-// ============================================================
-// NOTE: no longer called by estimateDivisionRisk (divisions without a live
-// sensor now show a flat "no data" placeholder instead of a jittered guess).
-// Left in place in case a future feature wants a stable per-division seed.
+
 function divisionSeed(districtName, divisionName){
-  // Small deterministic hash (0..1) so each division gets a stable,
-  // distinct-but-related offset from its parent district's score.
+
   const str = (districtName+"|"+divisionName).toLowerCase();
   let h = 0;
   for(let i=0;i<str.length;i++){ h = (h*31 + str.charCodeAt(i)) >>> 0; }
-  return (h % 1000) / 1000; // 0..0.999
+  return (h % 1000) / 1000; 
 }
 
 function estimateDivisionRisk(districtName, divisionName){
   const key = districtName.toLowerCase();
   const base = S.districtData[key];
 
-  // Only the ONE electoral division that is actually co-located with this
-  // district's physical IoT sensor node (reported live via Firebase's
-  // `landslideSystem/division` field) gets the real, live risk reading.
-  // Every other division in the district has no sensor of its own, so it
-  // shows an honest low/safe placeholder instead of a jittered copy of the
-  // district score — we don't want 9 divisions all flashing DANGER because
-  // one of them has a sensor reading 0.84.
+  
   const isLiveDivision = !!(base && base.liveDivision &&
     base.liveDivision.toLowerCase() === divisionName.toLowerCase());
 
@@ -1259,9 +1197,7 @@ function estimateDivisionRisk(districtName, divisionName){
     };
   }
 
-  // No dedicated sensor in this division — show a fixed, honest "no data"
-  // placeholder (well inside SAFE) rather than fabricating a number close
-  // to the district's live score.
+ 
   const NO_SENSOR_SCORE = 0.08;
   return {
     score: NO_SENSOR_SCORE,
@@ -1353,12 +1289,10 @@ function renderDivisionResult(districtName, divisionName){
 }
 
 function refreshDivisionResultIfShowing(updatedDistrictName){
-  // Re-render the open result card if its district just got fresh data
   const last = S.lastDivisionLookup;
   if(last && last.districtName.toLowerCase() === String(updatedDistrictName||"").toLowerCase()){
     renderDivisionResult(last.districtName, last.divisionName);
   }
-  // Also refresh tile colors/scores if that district's grid is currently shown
   const distSel = document.getElementById("div-district-select");
   if(distSel && distSel.value && distSel.value.toLowerCase() === String(updatedDistrictName||"").toLowerCase()){
     renderDivisionGrid(distSel.value);
@@ -1380,8 +1314,6 @@ function initDivisionPanel(){
     renderDivisionGrid(distSel.value);
   });
 
-  // Clicking a district on the main live map jumps straight to that
-  // district in the lookup panel and reveals its clickable division tiles.
   document.querySelectorAll(".dp").forEach(el=>{
     el.addEventListener("click", function(){
       const name = this.dataset.district;
@@ -1435,16 +1367,11 @@ function normalizeDistrict(value){
   return districts.find(d => d.toLowerCase() === key) || null;
 }
 
-// ============================================================
-// /landslideSystem — single live sensor node (ESP32) → main card,
-// sensor panel, charts, map (its own district), danger popup.
-// ============================================================
+
 function applyLandslideSystem(node){
   if(!node) return;
 
-  // Firebase stores riskScore as a 0–1 decimal (e.g. 0.75 = 75%).
-  // Safety: null / undefined / empty-string / non-numeric all fall back to 0,
-  // never throwing and never displaying anything but a valid 0–100% value.
+ 
   const rawScore = Number(node.riskScore);
   const score = Number.isFinite(rawScore) ? Math.max(0, Math.min(1, rawScore)) : 0;
 
@@ -1454,7 +1381,7 @@ function applyLandslideSystem(node){
     division: node.division || "—",
     risk: { score },
     sensors: {
-      rainfall:      Number(node.rainDuration) || 0,   // hours, per project convention
+      rainfall:      Number(node.rainDuration) || 0,  
       soilMoisture:  Number(node.soilMoisture) || 0,
       tiltAngle:     Number(node.tiltAngle) || 0,
       pressure:      Number(node.pressureChange) || 0,
@@ -1464,11 +1391,7 @@ function applyLandslideSystem(node){
 
   handleData(data);
 
-  // batteryVoltage / solarVoltage are read from landslideSystem and kept in
-  // memory below, but intentionally NOT rendered — the existing sensor panel
-  // has no tile for them and the design must not be altered. If you later
-  // add dedicated tiles with ids "s-battery"/"s-solar", this will start
-  // populating them automatically with no other code changes needed.
+  
   S.lastBatteryVoltage = node.batteryVoltage;
   S.lastSolarVoltage   = node.solarVoltage;
   const batt = document.getElementById("s-battery");
@@ -1477,18 +1400,12 @@ function applyLandslideSystem(node){
   if(sol && node.solarVoltage!==undefined) sol.textContent = Number(node.solarVoltage).toFixed(2);
 }
 
-// ============================================================
-// /riskMap — 9 provinces / 25 districts / up to 160 electoral divisions.
-// Each populated district paints the map; anything not present in
-// riskMap simply keeps its current/default colour (no fake data).
-// ============================================================
 function applyRiskMap(riskMapObj){
   if(!riskMapObj) return;
   Object.entries(riskMapObj).forEach(([key, entry])=>{
     if(!entry) return;
     const district = entry.district || key;
-    // Firebase stores riskScore as a 0–1 decimal here too.
-    // Safety: null / undefined / non-numeric → 0, never thrown, never skipped.
+    
     const rawScore = Number(entry.riskScore);
     const score = Number.isFinite(rawScore) ? Math.max(0, Math.min(1, rawScore)) : 0;
     updateMap(district, score, entry.sensors || null);
@@ -1498,7 +1415,6 @@ function applyRiskMap(riskMapObj){
 function connectFirebase(){
   setConnected("connecting");
 
-  // /landslideSystem — live ESP32 reading
   onValue(ref(db, "landslideSystem"), snap=>{
     setConnected("online");
     applyLandslideSystem(snap.val());
@@ -1507,14 +1423,12 @@ function connectFirebase(){
     setConnected("offline");
   });
 
-  // /riskMap — province/district/division colour states
   onValue(ref(db, "riskMap"), snap=>{
     applyRiskMap(snap.val());
   }, err=>{
     console.error("Firebase riskMap error:", err);
   });
 
-  // /warningHistory — newest-first warning log
   onValue(ref(db, "warningHistory"), snap=>{
     renderWarningHistory(snap.val());
   }, err=>{
@@ -1534,8 +1448,6 @@ function showAlert(district){
   }catch(e){}
 }
 function closeAlert(){ document.getElementById("danger-overlay").classList.remove("active"); }
-// Module-scope functions aren't global; the danger-modal button uses an
-// inline onclick="closeAlert()", so expose it explicitly on window.
 window.closeAlert = closeAlert;
 
 initCharts();
