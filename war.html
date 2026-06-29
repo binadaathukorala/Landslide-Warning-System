@@ -1045,7 +1045,7 @@ function updateCharts(data){
 
 function pushWarningHistory(data){
   const score = data.risk?.score ?? 0;
-  push(ref(db, "warningHistory"), {
+  push(ref(db, "landslideSystem"), {
     timestamp:  serverTimestamp(),
     province:   data.province || "—",
     district:   data.district || "—",
