@@ -374,7 +374,7 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
 <div class="component-card"><h4><svg class="icon"><use href="#icon-compass"/></svg> MPU6050 Gyroscope</h4><p>Measures tilt angle and ground acceleration for slope shift detection. I2C interface (GPIO 21/22).</p><span class="badge">Integrated</span></div>
 <div class="component-card"><h4><svg class="icon"><use href="#icon-wave"/></svg> SW-420 Vibration Sensor</h4><p>Detects ground vibration via rolling-ball switch. Connected to GPIO 32.</p><span class="badge">Integrated</span></div>
 <div class="component-card"><h4><svg class="icon"><use href="#icon-compress"/></svg> BMP280 Pressure Sensor</h4><p>Monitors internal pipe pressure for deformation detection. I2C interface (GPIO 21/22).</p><span class="badge">Integrated</span></div>
-<div class="component-card"><h4><svg class="icon"><use href="#icon-tv"/></svg> LCD 20x4 Display</h4><p>On-site status readout of sensor values and warning level. I2C interface.</p><span class="badge">Integrated</span></div>
+<div class="component-card"><h4><svg class="icon"><use href="#icon-tv"/></svg> LCD 16x2 Display</h4><p>On-site status readout of sensor values and warning level. Parallel interface (RS=14, EN=27, D4=26, D5=2, D6=33, D7=4).</p><span class="badge">Integrated</span></div>
 <div class="component-card"><h4><svg class="icon"><use href="#icon-sms"/></svg> SIM900A GSM Module</h4><p>Sends SMS alerts when Wi-Fi unavailable or DANGER declared. UART interface.</p><span class="badge">Integrated</span></div>
 <div class="component-card"><h4><svg class="icon"><use href="#icon-volume"/></svg> 5V Active Buzzer (85dB)</h4><p>Audible alarm on DANGER threshold. Connected to GPIO 25.</p><span class="badge">Integrated</span></div>
 <div class="component-card"><h4><svg class="icon"><use href="#icon-solar"/></svg> Solar Panel + Battery</h4><p>Hybrid remote power for off-grid hillside deployment. 5V regulated output.</p><span class="badge">Integrated</span></div>
@@ -383,18 +383,31 @@ footer{background:var(--primary);color:white;padding:60px 5% 30px}
 
 <div class="tech-panel" id="algorithm">
 <div class="algo-box">
-<span class="keyword">if</span> (P24 &gt;= 150mm || P1 &gt;= 75mm) RainScore = 1.00;<br>
-<span class="keyword">else if</span> (P24 &gt;= 100mm) RainScore = 0.75;<br>
-<span class="keyword">else if</span> (P24 &gt;= 75mm) RainScore = 0.50;<br><br>
-AntecedentIndex = P24 + 0.7*P48 + 0.5*P72;<br>
-AntecedentScore = <span class="function">clamp</span>(AntecedentIndex / A_local, 0, 1);<br><br>
-DynamicRisk = 0.40 * RainScore<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.20 * AntecedentScore<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.20 * SoilMoisture<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.15 * Tilt/Deformation<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ 0.05 * Vibration;<br><br>
-FinalRisk = SITE_FACTOR * DynamicRisk;
+<span class="comment">// Rain Score (R)</span><br>
+<span class="keyword">if</span> (Rain &lt; 40%) RainScore = 0.00;<br>
+<span class="keyword">else if</span> (Rain &lt; 70%) RainScore = 0.50;<br>
+<span class="keyword">else</span> RainScore = 1.00;<br><br>
+<span class="comment">// Soil Moisture Score (S)</span><br>
+<span class="keyword">if</span> (Soil &lt; 60%) SoilScore = 0.00;<br>
+<span class="keyword">else if</span> (Soil &lt; 80%) SoilScore = 0.50;<br>
+<span class="keyword">else</span> SoilScore = 1.00;<br><br>
+<span class="comment">// Tilt Score (T)</span><br>
+<span class="keyword">if</span> (Tilt &lt; 10°) TiltScore = 0.00;<br>
+<span class="keyword">else if</span> (Tilt &lt; 20°) TiltScore = 0.50;<br>
+<span class="keyword">else</span> TiltScore = 1.00;<br><br>
+<span class="comment">// Pressure Score (P)</span><br>
+<span class="keyword">if</span> (Pressure &gt;= 1000 hPa) PressureScore = 0.00;<br>
+<span class="keyword">else if</span> (Pressure &gt;= 990 hPa) PressureScore = 0.50;<br>
+<span class="keyword">else</span> PressureScore = 1.00;<br><br>
+<span class="comment">// Final Risk Score</span><br>
+Risk = 0.35*RainScore + 0.30*SoilScore + 0.25*TiltScore + 0.10*PressureScore;<br>
+RiskPercentage = Risk * 100;<br><br>
+<span class="comment">// Classification</span><br>
+<span class="keyword">if</span> (RiskPercentage &lt; 40) status = <span class="function">"NORMAL"</span>;<br>
+<span class="keyword">else if</span> (RiskPercentage &lt; 70) status = <span class="function">"WARNING"</span>;<br>
+<span class="keyword">else</span> status = <span class="function">"DANGER"</span>;
 </div>
+<p style="text-align:center;color:rgba(255,255,255,.7);margin-top:1.5rem;font-size:.95rem">R = Rain Score &nbsp;•&nbsp; S = Soil Moisture Score &nbsp;•&nbsp; T = Tilt Score &nbsp;•&nbsp; P = Pressure Score &nbsp;•&nbsp; 0-39% = Normal, 40-69% = Warning, 70-100% = Danger</p>
 </div>
 
 <div class="tech-panel" id="thresholds">
@@ -528,6 +541,7 @@ document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(e
 
 function createRain() {
     const heroBg = document.getElementById('heroBg');
+    if (!heroBg) { return; }
     for (let i = 0; i < 50; i++) {
         const drop = document.createElement('div');
         drop.className = 'rain';
@@ -570,6 +584,8 @@ const scenarios = [
 ];
 
 function updateSimulation() {
+    const soilBarEl = document.getElementById('soilBar');
+    if (!soilBarEl) { return; }
     const s = scenarios[currentScenario];
     document.getElementById('soilBar').style.width = s.soil + '%';
     document.getElementById('soilValue').textContent = s.soil + '%';
