@@ -486,6 +486,53 @@ footer{
 
 .footer-brand .logo{display:inline-flex;align-items:center;text-decoration:none;color:var(--white);}
 .footer-brand .logo .icon{width:26px;height:26px;margin-right:9px;fill:var(--cyan2);}
+
+/* ===== Admin ===== */
+.admin-btn{background:var(--w05);border:1px solid var(--w10);color:var(--w80);border-radius:7px;padding:6px 13px;font-family:"Inter",sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:0.02em;}
+.admin-btn:hover{background:var(--w10);border-color:rgba(0,188,212,0.35);color:var(--white);}
+.admin-overlay{position:fixed;inset:0;z-index:1001;background:rgba(0,0,0,0.75);display:none;align-items:center;justify-content:center;padding:20px;}
+.admin-overlay.active{display:flex;animation:ofade 0.25s ease;}
+.admin-modal{background:linear-gradient(160deg,#0d1f3c,#070f1d);border:1.5px solid rgba(0,188,212,0.3);border-radius:16px;padding:26px 26px 22px;max-width:380px;width:100%;box-shadow:0 0 60px rgba(0,188,212,0.15);animation:mpop 0.3s cubic-bezier(.175,.885,.32,1.275);}
+.admin-modal-wide{max-width:520px;}
+.admin-modal-head{font-size:1.1rem;font-weight:800;color:var(--white);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.admin-badge{font-size:0.6rem;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;background:var(--safe-d);color:var(--safe);border:1px solid rgba(0,230,118,0.3);border-radius:20px;padding:3px 10px;}
+.admin-input{width:100%;background:rgba(7,15,29,0.9);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-family:"Inter",sans-serif;font-size:0.85rem;outline:none;transition:border-color .2s;}
+.admin-input:focus{border-color:rgba(0,188,212,0.5);}
+.admin-error{color:var(--dang);font-size:0.75rem;margin-bottom:8px;}
+.admin-modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}
+.admin-btn-primary{background:linear-gradient(135deg,var(--blue),rgba(0,188,212,0.8));color:var(--white);border:none;border-radius:8px;padding:9px 18px;font-family:"Inter",sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;transition:opacity .2s;}
+.admin-btn-primary:hover{opacity:0.88;}
+.admin-btn-secondary{background:var(--w05);border:1px solid var(--w20);color:var(--w80);border-radius:8px;padding:9px 18px;font-family:"Inter",sans-serif;font-size:0.8rem;cursor:pointer;transition:all .2s;}
+.admin-btn-secondary:hover{background:var(--w10);color:var(--white);}
+.admin-btn-danger{background:var(--dang-d);border:1px solid rgba(255,23,68,0.35);color:var(--dang);border-radius:8px;padding:9px 16px;font-family:"Inter",sans-serif;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all .2s;margin-right:10px;margin-top:6px;}
+.admin-btn-danger:hover{background:rgba(255,23,68,0.2);}
+.admin-section{border-top:1px solid var(--w10);padding-top:14px;margin-top:14px;}
+.admin-section:first-of-type{border-top:none;margin-top:0;padding-top:0;}
+.admin-section h4{font-size:0.8rem;color:var(--cyan2);margin-bottom:6px;}
+.admin-hint{font-size:0.68rem;color:var(--w50);margin-bottom:10px;line-height:1.5;}
+.admin-textarea{width:100%;background:rgba(7,15,29,0.9);border:1px solid var(--border);color:var(--white);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-family:"Inter",sans-serif;font-size:0.82rem;outline:none;resize:vertical;transition:border-color .2s;}
+.admin-textarea:focus{border-color:rgba(0,188,212,0.5);}
+.admin-status{font-size:0.72rem;color:var(--safe);min-height:16px;margin-top:10px;}
+
+/* ===== Notice banner + toasts ===== */
+.notice-banner{position:relative;z-index:5;display:none;align-items:center;gap:12px;max-width:1800px;margin:0 auto;padding:10px 32px;background:rgba(255,202,40,0.1);border-bottom:1px solid rgba(255,202,40,0.3);color:var(--warn);font-size:0.8rem;}
+.notice-banner .nb-icon{font-size:1rem;flex-shrink:0;}
+.notice-banner .nb-text{flex:1;line-height:1.4;}
+.notice-banner .nb-close{background:none;border:none;color:var(--warn);font-size:1.1rem;cursor:pointer;line-height:1;padding:2px 6px;flex-shrink:0;}
+.notice-toast-container{position:fixed;top:80px;right:20px;z-index:1200;display:flex;flex-direction:column;gap:10px;max-width:340px;}
+.notice-toast{display:flex;gap:10px;align-items:flex-start;background:rgba(10,22,40,0.97);border:1px solid rgba(255,202,40,0.35);border-radius:10px;padding:12px 14px;box-shadow:0 8px 30px rgba(0,0,0,0.5);animation:ttin 0.3s ease;backdrop-filter:blur(14px);}
+@keyframes ttin{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}}
+.notice-toast .nt-icon{font-size:1.1rem;}
+.notice-toast .nt-title{font-size:0.7rem;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:var(--warn);margin-bottom:3px;}
+.notice-toast .nt-msg{font-size:0.78rem;color:var(--w80);line-height:1.4;}
+.notice-toast .nt-close{background:none;border:none;color:var(--w50);font-size:1rem;cursor:pointer;line-height:1;}
+@media(max-width:680px){.notice-toast-container{top:70px;right:10px;left:10px;max-width:none;}}
+
+/* ===== "Recovering from danger" map color (lower red than active danger) ===== */
+.dp.danger-recent{fill:rgba(255,111,64,0.42);stroke:rgba(255,111,64,0.55);}
+.dp.danger-recent:hover{fill:rgba(255,111,64,0.68);}
+.ld.danger-recent{background:rgba(255,111,64,0.85);}
+.mtt-val.danger-recent{color:#ff8a5c;}
 </style>
 </head>
 <body>
@@ -513,7 +560,7 @@ footer{
 <li><a href="war.html" class="active">Live Monitor</a></li>
   </ul>
   <div class="nav-right">
-    <span style="font-size:0.65rem;color:var(--w50);background:var(--w05);border:1px solid var(--w10);border-radius:5px;padding:3px 9px;letter-spacing:0.05em;"> </span>
+    <button class="admin-btn" id="adminBtn" type="button">🔐 Admin</button>
   </div>
   <button class="mobile-menu-btn" id="mobileMenuBtn"><svg class="icon" style="width:24px;height:24px;fill:currentColor"><use href="#icon-menu"/></svg></button>
 </nav>
@@ -533,6 +580,11 @@ footer{
   </div>
 </div>
 
+<div class="notice-banner" id="notice-banner" style="display:none;">
+  <div class="nb-icon">📢</div>
+  <div class="nb-text" id="notice-banner-text">—</div>
+  <button class="nb-close" id="notice-banner-close" type="button">&times;</button>
+</div>
 
 <div class="dash">
 
@@ -703,6 +755,7 @@ footer{
       <div class="li"><div class="ld safe"></div>Safe (24h)</div>
       <div class="li"><div class="ld warning"></div>Warning in 24h</div>
       <div class="li"><div class="ld danger"></div>Danger in 24h</div>
+      <div class="li"><div class="ld danger-recent"></div>Recovering from Danger</div>
     </div>
   </div>
 
@@ -763,6 +816,49 @@ footer{
     <button class="dm-close" onclick="closeAlert()">Acknowledge &amp; Close</button>
   </div>
 </div>
+
+<div class="notice-toast-container" id="notice-toast-container"></div>
+
+<div class="admin-overlay" id="admin-login-overlay">
+  <div class="admin-modal">
+    <div class="admin-modal-head">🔐 Admin Login</div>
+    <input type="email" id="admin-email" class="admin-input" placeholder="Admin email" autocomplete="off">
+    <input type="password" id="admin-password" class="admin-input" placeholder="Password" autocomplete="off">
+    <div class="admin-error" id="admin-login-error" style="display:none;"></div>
+    <div class="admin-modal-actions">
+      <button class="admin-btn-secondary" id="admin-login-cancel" type="button">Cancel</button>
+      <button class="admin-btn-primary" id="admin-login-submit" type="button">Login</button>
+    </div>
+  </div>
+</div>
+
+<div class="admin-overlay" id="admin-panel-overlay">
+  <div class="admin-modal admin-modal-wide">
+    <div class="admin-modal-head">Admin Panel <span class="admin-badge">Logged in</span></div>
+
+    <div class="admin-section">
+      <h4>📢 Emergency Notice Board</h4>
+      <p class="admin-hint">Everyone currently viewing the page sees this as a toast + banner.</p>
+      <textarea id="admin-notice-text" class="admin-textarea" rows="3" placeholder="Type an emergency message for all users…"></textarea>
+      <button class="admin-btn-primary" id="admin-notice-send" type="button">Send Notice to All Users</button>
+    </div>
+
+    <div class="admin-section">
+      <h4>🗑 Data Management</h4>
+      <p class="admin-hint">Resets are permanent and affect every user's dashboard.</p>
+      <button class="admin-btn-danger" id="admin-reset-history" type="button">Reset Warning History &amp; 24h Status</button>
+      <button class="admin-btn-danger" id="admin-clear-notices" type="button">Clear Notice Board</button>
+    </div>
+
+    <div class="admin-status" id="admin-status"></div>
+
+    <div class="admin-modal-actions">
+      <button class="admin-btn-secondary" id="admin-logout" type="button">Logout</button>
+      <button class="admin-btn-secondary" id="admin-panel-close" type="button">Close</button>
+    </div>
+  </div>
+</div>
+
 <footer>
 <div class="footer-grid">
 <div class="footer-brand">
@@ -813,7 +909,7 @@ footer{
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import {
-  getDatabase, ref, onValue, push, set, serverTimestamp
+  getDatabase, ref, onValue, onChildAdded, push, set, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const FB_CONFIG = {
@@ -960,8 +1056,9 @@ document.querySelectorAll(".dp").forEach(el=>{
     lvlEl.className="mtt-val"+(lvl?" "+lvl:"");
     const w24El=document.getElementById("mtt-24h");
     const worst24=h24GetWorst(n);
-    w24El.textContent=worst24?worst24.toUpperCase():"—";
-    w24El.className="mtt-val"+(worst24?" "+worst24:"");
+    const w24Cls = worst24 ? mapClassFor(n, worst24) : null;
+    w24El.textContent = worst24 ? (w24Cls==="danger-recent" ? "DANGER (RECOVERING)" : worst24.toUpperCase()) : "—";
+    w24El.className="mtt-val"+(w24Cls?" "+w24Cls:"");
     document.getElementById("mtt-rain").textContent=sensors.rainfall!==undefined?sensors.rainfall+"%":"—";
     document.getElementById("mtt-soil").textContent=sensors.soilMoisture!==undefined?sensors.soilMoisture+"%":"—";
     document.getElementById("mtt-tilt").textContent=sensors.tiltAngle!==undefined?sensors.tiltAngle+"°":"—";
@@ -1152,12 +1249,22 @@ function h24GetWorst(districtName){
   return S.h24[key]?.worstLevel || null;
 }
 
+function mapClassFor(districtName, worstLevel){
+  const key = districtName.toLowerCase();
+  const current = S.districtData[key]?.level;
+  if(worstLevel === "danger" && current && current !== "danger"){
+    return "danger-recent"; // was danger in the last 24h, but the current reading has improved
+  }
+  return worstLevel;
+}
+
 function h24Apply(districtName){
   const worst = h24GetWorst(districtName);
   if(!worst) return;
+  const cls = mapClassFor(districtName, worst);
   document.querySelectorAll(".dp").forEach(el=>{
     if(el.dataset.district.toLowerCase() === districtName.toLowerCase()){
-      el.setAttribute("class", "dp " + worst);
+      el.setAttribute("class", "dp " + cls);
     }
   });
 }
@@ -1185,18 +1292,20 @@ function updateMap(name,score,sensors,divisionName,riskLevel){
   const level = riskLevel ? riskLevel.toLowerCase() : rc(score);
   h24Record(name, level);
   const worst24 = h24GetWorst(name) || level;
+
+  const liveDivision = (divisionName && divisionName!=="—") ? divisionName : null;
+  S.districtData[name.toLowerCase()]={score,level,worst24,liveDivision};
+  if(sensors) S.sensorCache[name.toLowerCase()]=sensors;
+
+  const cls = mapClassFor(name, worst24);
   let matched=false;
   document.querySelectorAll(".dp").forEach(el=>{
     if(el.dataset.district.toLowerCase()===name.toLowerCase()){
-      
-      el.setAttribute("class", "dp "+worst24);
+      el.setAttribute("class", "dp "+cls);
       matched=true;
     }
   });
   if(!matched) console.warn("District not found on map:", name);
-  const liveDivision = (divisionName && divisionName!=="—") ? divisionName : null;
-  S.districtData[name.toLowerCase()]={score,level,worst24,liveDivision};
-  if(sensors) S.sensorCache[name.toLowerCase()]=sensors;
   refreshDivisionResultIfShowing(name);
 }
 
@@ -1489,8 +1598,130 @@ function showAlert(district){
 function closeAlert(){ document.getElementById("danger-overlay").classList.remove("active"); }
 window.closeAlert = closeAlert;
 
+/* ============ ADMIN LOGIN + NOTICE BOARD ============ */
+const ADMIN_CREDENTIALS = { email: "binadaathukorala@gmail.com", password: "Admin-Binada" };
+const PAGE_LOAD_TS = Date.now();
+S.isAdmin = false;
+S.shownNoticeKeys = new Set();
+S.bannerNotice = null;
+try{ if(sessionStorage.getItem("isAdmin") === "1") S.isAdmin = true; }catch(e){}
+
+function openLoginModal(){
+  document.getElementById("admin-login-error").style.display="none";
+  document.getElementById("admin-email").value="";
+  document.getElementById("admin-password").value="";
+  document.getElementById("admin-login-overlay").classList.add("active");
+}
+function closeLoginModal(){ document.getElementById("admin-login-overlay").classList.remove("active"); }
+function openAdminPanel(){ document.getElementById("admin-panel-overlay").classList.add("active"); }
+function closeAdminPanel(){ document.getElementById("admin-panel-overlay").classList.remove("active"); }
+function flashAdminStatus(msg){
+  const st = document.getElementById("admin-status");
+  st.textContent = msg;
+  setTimeout(()=>{ if(st.textContent===msg) st.textContent=""; }, 3500);
+}
+
+document.getElementById("adminBtn").addEventListener("click", ()=>{ S.isAdmin ? openAdminPanel() : openLoginModal(); });
+document.getElementById("admin-login-cancel").addEventListener("click", closeLoginModal);
+document.getElementById("admin-login-submit").addEventListener("click", ()=>{
+  const email = document.getElementById("admin-email").value.trim().toLowerCase();
+  const pass  = document.getElementById("admin-password").value;
+  if(email === ADMIN_CREDENTIALS.email.toLowerCase() && pass === ADMIN_CREDENTIALS.password){
+    S.isAdmin = true;
+    try{ sessionStorage.setItem("isAdmin","1"); }catch(e){}
+    closeLoginModal(); openAdminPanel();
+  } else {
+    const err = document.getElementById("admin-login-error");
+    err.textContent = "Invalid email or password.";
+    err.style.display = "block";
+  }
+});
+document.getElementById("admin-panel-close").addEventListener("click", closeAdminPanel);
+document.getElementById("admin-logout").addEventListener("click", ()=>{
+  S.isAdmin = false;
+  try{ sessionStorage.removeItem("isAdmin"); }catch(e){}
+  closeAdminPanel();
+});
+
+document.getElementById("admin-notice-send").addEventListener("click", ()=>{
+  const box = document.getElementById("admin-notice-text");
+  const text = box.value.trim();
+  if(!text) return;
+  push(ref(db,"noticeBoard"), { message: text, timestamp: Date.now(), admin: ADMIN_CREDENTIALS.email });
+  box.value = "";
+  flashAdminStatus("Notice sent to all users.");
+});
+
+document.getElementById("admin-reset-history").addEventListener("click", ()=>{
+  if(!confirm("This permanently clears the warning history table and the 24h danger memory for every user. Continue?")) return;
+  set(ref(db,"warningHistory"), null);
+  S.riskHist=[]; S.soilHist=[]; S.rainHist=[];
+  S.h24 = {};
+  try{ Object.keys(localStorage).filter(k=>k.startsWith("h24_")).forEach(k=>localStorage.removeItem(k)); }catch(e){}
+  document.querySelectorAll(".dp").forEach(el=>{ el.setAttribute("class","dp"); });
+  flashAdminStatus("Warning history and 24h status reset for all users.");
+});
+
+document.getElementById("admin-clear-notices").addEventListener("click", ()=>{
+  if(!confirm("Clear the notice board for all users?")) return;
+  set(ref(db,"noticeBoard"), null);
+  document.getElementById("notice-banner").style.display = "none";
+  S.bannerNotice = null;
+  flashAdminStatus("Notice board cleared.");
+});
+
+document.getElementById("notice-banner-close").addEventListener("click", ()=>{
+  document.getElementById("notice-banner").style.display = "none";
+});
+
+function updateNoticeBanner(val){
+  if(!val || !val.message) return;
+  const ts = val.timestamp || 0;
+  if(!S.bannerNotice || ts >= (S.bannerNotice.timestamp||0)){
+    S.bannerNotice = val;
+    document.getElementById("notice-banner-text").textContent = val.message;
+    document.getElementById("notice-banner").style.display = "flex";
+  }
+}
+
+function showNoticeToast(val){
+  const container = document.getElementById("notice-toast-container");
+  const el = document.createElement("div");
+  el.className = "notice-toast";
+  el.innerHTML = `<div class="nt-icon">📢</div><div class="nt-body"><div class="nt-title">Emergency Notice</div><div class="nt-msg"></div></div><button class="nt-close" type="button">&times;</button>`;
+  el.querySelector(".nt-msg").textContent = val.message;
+  el.querySelector(".nt-close").addEventListener("click", ()=>el.remove());
+  container.appendChild(el);
+  setTimeout(()=>{ if(el.parentNode) el.remove(); }, 12000);
+  if("Notification" in window){
+    if(Notification.permission === "granted"){
+      new Notification("Landslide Warning — Emergency Notice", { body: val.message });
+    } else if(Notification.permission !== "denied"){
+      Notification.requestPermission().then(p=>{
+        if(p === "granted") new Notification("Landslide Warning — Emergency Notice", { body: val.message });
+      });
+    }
+  }
+}
+
+function handleNoticeEntry(key, val){
+  if(!val || !val.message) return;
+  updateNoticeBanner(val);
+  const ts = val.timestamp || 0;
+  if(ts > PAGE_LOAD_TS - 4000 && !S.shownNoticeKeys.has(key)){
+    S.shownNoticeKeys.add(key);
+    showNoticeToast(val);
+  }
+}
+
+function connectNoticeBoard(){
+  onChildAdded(ref(db, "noticeBoard"), snap=>{ handleNoticeEntry(snap.key, snap.val()); },
+    err=>console.error("Firebase noticeBoard error:", err));
+}
+
 initCharts();
 connectFirebase();
+connectNoticeBoard();
 </script>
 
 <script>
